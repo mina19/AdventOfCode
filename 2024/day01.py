@@ -1,5 +1,5 @@
 ## Part 1
-day1lines = [line.rstrip() for line in open('1_p1.txt')]
+day1lines = [line.rstrip() for line in open('day01.txt')]
 list1 = [int(nums.split('   ')[0]) for nums in day1lines]
 list2 = [int(nums.split('   ')[1]) for nums in day1lines]
 
