@@ -11,8 +11,8 @@ lines = [
     line.rstrip()
     for line in open(f"/home/coder/workspace/AdventOfCode/2024/day{day:02d}.txt")
 ]
-lines = [line.split(" ") for line in lines]
-lines = [[int(num) for num in sublist] for sublist in lines]
+
+lines = [[int(num) for num in line.split()] for line in lines]
 
 # The levels are either all increasing or all decreasing.
 # Any two adjacent levels differ by at least one and at most three.
@@ -38,15 +38,16 @@ filtered_lines = [
 ]
 
 
-def reevaluate(num_list):
+def recount_violations(num_list):
     variants = [
         np.concatenate((num_list[:i], num_list[i + 1 :])) for i in range(len(num_list))
     ]
     for variant in variants:
-        if count_violations(variant) == 0:
-            return 1
-    return 0
+        violation_count = count_violations(variant)
+        if violation_count == 0:
+            return 0
+    return violation_count
 
 
-reevaluated_list = [reevaluate(line) for line in filtered_lines]
-print(violations_count_list.count(0) + reevaluated_list.count(1))
+violations_recount_list = [recount_violations(line) for line in filtered_lines]
+print(violations_count_list.count(0) + violations_recount_list.count(0))
