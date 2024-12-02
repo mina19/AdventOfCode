@@ -20,17 +20,13 @@ lines = [[int(num) for num in sublist] for sublist in lines]
 
 def count_violations(line):
     diff_list = np.diff(line)
-    is_all_positive = (diff_list > 0).all()
-    is_all_negative = (diff_list < 0).all()
-
-    if is_all_positive:
-        return len([x for x in diff_list if x < 0 or x > 3])
-    elif is_all_negative:
-        return len([x for x in diff_list if x > 0 or x < -3])
+    mostly_positive = len([x for x in diff_list if x > 0]) > len(
+        [x for x in diff_list if x < 0]
+    )
+    if mostly_positive:
+        return len([x for x in diff_list if x <= 0 or x > 3])
     else:
-        return min(
-            len([x for x in diff_list if x >= 0]), len([x for x in diff_list if x <= 0])
-        )
+        return len([x for x in diff_list if x >= 0 or x < -3])
 
 
 violations_count_list = [count_violations(line) for line in lines]
