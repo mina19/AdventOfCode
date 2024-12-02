@@ -7,10 +7,7 @@ day = 2
 save_data(2024, day)
 
 ## Part 1
-lines = [
-    line.rstrip()
-    for line in open(f"/home/coder/workspace/AdventOfCode/2024/day{day:02d}.txt")
-]
+lines = [line.rstrip() for line in open(f"day{day:02d}.txt")]
 
 lines = [[int(num) for num in line.split()] for line in lines]
 

@@ -1,10 +1,11 @@
 ## Pull Data
 from get_data import save_data
 
-save_data(2024, 1)
+day = 1
+save_data(2024, day)
 
 ## Part 1
-lines = [line.rstrip() for line in open("day01.txt")]
+lines = [line.rstrip() for line in open(f"day{day:02d}.txt")]
 list1 = [int(nums.split()[0]) for nums in lines]
 list2 = [int(nums.split()[1]) for nums in lines]
 
