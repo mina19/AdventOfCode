@@ -1,12 +1,15 @@
-## Pull Data
-# from get_data import save_data
-
-# save_data(2024, 2)
 import numpy as np
+
+## Pull Data
+from get_data import save_data
+
+day = 2
+save_data(2024, day)
 
 ## Part 1
 lines = [
-    line.rstrip() for line in open("/home/coder/workspace/AdventOfCode/2024/day02.txt")
+    line.rstrip()
+    for line in open(f"/home/coder/workspace/AdventOfCode/2024/day{day:02d}.txt")
 ]
 lines = [line.split(" ") for line in lines]
 lines = [[int(num) for num in sublist] for sublist in lines]
@@ -50,4 +53,4 @@ def reevaluate(num_list):
 
 
 reevaluated_list = [reevaluate(line) for line in filtered_lines]
-print(reevaluated_list.count(1))
+print(violations_count_list.count(0) + reevaluated_list.count(1))
