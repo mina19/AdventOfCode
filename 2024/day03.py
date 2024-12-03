@@ -42,15 +42,15 @@ def part2_slow():
     def find_last_instruction(target):
         for t in sorted_combined_matches:
             if t[0] < target:
-                return t
-        return (0, "do")
+                return t[1]
+        return "do"
 
     matches = re.finditer(pattern, data)
 
     total = 0
     for match in matches:
         instruction = find_last_instruction(match.start())
-        if instruction[1] == "do":
+        if instruction == "do":
             total += int(match.group(1)) * int(match.group(2))
     return total
 
