@@ -58,7 +58,7 @@ def part2_slow():
 print(part2_slow())
 
 
-## Faster version
+## Another fast way (from Michael C.)
 @timeit
 def part2_fast():
     matches = re.finditer(pattern, data)
@@ -85,3 +85,24 @@ def part2_fast():
 
 
 print(part2_fast())
+
+
+## Another fast way (from Matt C.)
+@timeit
+def part2_fast2():
+    x = re.finditer(r"mul\((\d+),(\d+)\)|don't\(\)|do\(\)", data)
+
+    do_mul = True
+    total = 0
+    for match in x:
+        if match.group(0) == "don't()":
+            do_mul = False
+        elif match.group(0) == "do()":
+            do_mul = True
+        else:
+            total += int(match.group(1)) * int(match.group(2)) if do_mul else 0
+
+    return total
+
+
+print(part2_fast2())
