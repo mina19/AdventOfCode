@@ -1,5 +1,6 @@
 ## Pull Data
 import re
+from pathlib import Path
 
 from get_data import save_data, timeit
 
@@ -7,25 +8,27 @@ day = 3
 save_data(2024, day)
 
 ## Part 1
-lines = [line.rstrip() for line in open(f"day{day:02d}.txt")]
+# lines = [line.rstrip() for line in open(f"day{day:02d}.txt")]
 
-mystr = ""
-for line in lines:
-    mystr += line
+# mystr = ""
+# for line in lines:
+#     mystr += line
+
+mystr = Path(f"day{day:02d}.txt").read_text()
 
 # mystr = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"
 pattern = r"mul\((\d+),(\d+)\)"
 
-matches = re.findall(pattern, mystr)
-matches = [(int(match[0]), int(match[1])) for match in matches]
-
 
 @timeit
 def part1():
-    prod = 0
+    matches = re.findall(pattern, mystr)
+    matches = [(int(match[0]), int(match[1])) for match in matches]
+
+    total = 0
     for num1, num2 in matches:
-        prod += num1 * num2
-    return prod
+        total += num1 * num2
+    return total
 
 
 print(part1())
@@ -47,20 +50,17 @@ def find_last_instruction(target):
     return (0, "do")
 
 
-match_positions = [match.start() for match in re.finditer(pattern, mystr)]
-mul_dict = dict(zip(match_positions, matches))
-
-
 ## This is slower than I'd like.
 @timeit
 def part2_slow():
-    prod = 0
-    for i in match_positions:
-        match = mul_dict[i]
-        instruction = find_last_instruction(i)
+    matches = re.finditer(pattern, mystr)
+
+    total = 0
+    for match in matches:
+        instruction = find_last_instruction(match.start())
         if instruction[1] == "do":
-            prod += int(match[0]) * int(match[1])
-    return prod
+            total += int(match.group(1)) * int(match.group(2))
+    return total
 
 
 print(part2_slow())
@@ -69,13 +69,13 @@ print(part2_slow())
 ## Faster version
 @timeit
 def part2_fast():
-    match_indices = re.finditer(pattern, mystr)
+    matches = re.finditer(pattern, mystr)
 
     do = True
     total = 0
     border = 0
 
-    for match in match_indices:
+    for match in matches:
         dont_ind = mystr[border : match.start()].find("don't()")
         do_ind = mystr[border : match.start()].find("do()")
 
