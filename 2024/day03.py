@@ -10,19 +10,19 @@ save_data(2024, day)
 ## Part 1
 # lines = [line.rstrip() for line in open(f"day{day:02d}.txt")]
 
-# mystr = ""
+# data = ""
 # for line in lines:
-#     mystr += line
+#     data += line
 
-mystr = Path(f"day{day:02d}.txt").read_text()
+data = Path(f"day{day:02d}.txt").read_text()
 
-# mystr = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"
+# data = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"
 pattern = r"mul\((\d+),(\d+)\)"
 
 
 @timeit
 def part1():
-    matches = re.findall(pattern, mystr)
+    matches = re.findall(pattern, data)
     matches = [(int(match[0]), int(match[1])) for match in matches]
 
     total = 0
@@ -36,8 +36,8 @@ print(part1())
 # Part 2
 do_pattern = r"do\(\)"
 dont_pattern = r"don't\(\)"
-do_matches = [(match.start(), "do") for match in re.finditer(do_pattern, mystr)]
-dont_matches = [(match.start(), "dont") for match in re.finditer(dont_pattern, mystr)]
+do_matches = [(match.start(), "do") for match in re.finditer(do_pattern, data)]
+dont_matches = [(match.start(), "dont") for match in re.finditer(dont_pattern, data)]
 
 combined_matches = do_matches + dont_matches
 sorted_combined_matches = sorted(combined_matches, key=lambda x: x[0], reverse=True)
@@ -53,7 +53,7 @@ def find_last_instruction(target):
 ## This is slower than I'd like.
 @timeit
 def part2_slow():
-    matches = re.finditer(pattern, mystr)
+    matches = re.finditer(pattern, data)
 
     total = 0
     for match in matches:
@@ -69,15 +69,15 @@ print(part2_slow())
 ## Faster version
 @timeit
 def part2_fast():
-    matches = re.finditer(pattern, mystr)
+    matches = re.finditer(pattern, data)
 
     do = True
     total = 0
     border = 0
 
     for match in matches:
-        dont_ind = mystr[border : match.start()].find("don't()")
-        do_ind = mystr[border : match.start()].find("do()")
+        dont_ind = data[border : match.start()].find("don't()")
+        do_ind = data[border : match.start()].find("do()")
 
         if dont_ind != -1 and dont_ind > do_ind:
             do = False
