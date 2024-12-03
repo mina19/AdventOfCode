@@ -4,8 +4,7 @@ from pathlib import Path
 
 from get_data import save_data, timeit
 
-day = 3
-save_data(2024, day)
+save_data(2024, day := 3)
 
 data = Path(f"day{day:02d}.txt").read_text()
 # data = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"
