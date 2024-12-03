@@ -1,21 +1,19 @@
 ## Pull Data
+from pathlib import Path
+
 from get_data import save_data
 
-day = 1
-save_data(2024, day)
+save_data(2024, day := 1)
 
 ## Part 1
-lines = [line.rstrip() for line in open(f"day{day:02d}.txt")]
-list1 = [int(nums.split()[0]) for nums in lines]
-list2 = [int(nums.split()[1]) for nums in lines]
+data = Path(f"day{day:02d}.txt").read_text().splitlines()
+left = [int(nums.split()[0]) for nums in data]
+right = [int(nums.split()[1]) for nums in data]
 
-list1.sort()
-list2.sort()
-
-diffs = [abs(list2[i] - list1[i]) for i in range(len(list1))]
+diffs = [abs(a - b) for a, b in zip(sorted(left), sorted(right))]
 print(sum(diffs))
 
 
 ## Part 2
-counts_multiplied = [list2.count(num) * num for num in list1]
+counts_multiplied = [right.count(num) * num for num in left]
 print(sum(counts_multiplied))

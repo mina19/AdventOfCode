@@ -1,20 +1,21 @@
+from pathlib import Path
+
 import numpy as np
 
 ## Pull Data
 from get_data import save_data, timeit
 
-day = 2
-save_data(2024, day)
+save_data(2024, day := 2)
 
 ## Part 1
-lines = [line.rstrip() for line in open(f"day{day:02d}.txt")]
-lines = [[int(num) for num in line.split()] for line in lines]
+data = Path(f"day{day:02d}.txt").read_text().splitlines()
+data = [[int(num) for num in nums_list.split()] for nums_list in data]
 
 
-def count_violations(line):
+def count_violations(num_list):
     # The levels are either all increasing or all decreasing.
     # Any two adjacent levels differ by at least one and at most three.
-    diff_list = np.diff(line)
+    diff_list = np.diff(num_list)
     mostly_positive = len([x for x in diff_list if x > 0]) > len(
         [x for x in diff_list if x < 0]
     )
@@ -26,7 +27,7 @@ def count_violations(line):
 
 @timeit
 def part1():
-    violations_count_list = [count_violations(line) for line in lines]
+    violations_count_list = [count_violations(line) for line in data]
     print(violations_count_list.count(0))
     return violations_count_list
 
@@ -45,11 +46,13 @@ def recount_violations(num_list):
 def part2():
     violations_count_list = part1()
 
-    filtered_lines = [
-        line for line, marker in zip(lines, violations_count_list) if marker > 0
+    filtered_data = [
+        num_list for num_list, marker in zip(data, violations_count_list) if marker > 0
     ]
 
-    violations_recount_list = [recount_violations(line) for line in filtered_lines]
+    violations_recount_list = [
+        recount_violations(num_list) for num_list in filtered_data
+    ]
     print(violations_count_list.count(0) + violations_recount_list.count(0))
 
 
