@@ -90,11 +90,11 @@ print(part2_fast())
 ## Another fast way (from Matt C.)
 @timeit
 def part2_fast2():
-    x = re.finditer(r"mul\((\d+),(\d+)\)|don't\(\)|do\(\)", data)
+    matches = re.finditer(r"mul\((\d+),(\d+)\)|don't\(\)|do\(\)", data)
 
     do_mul = True
     total = 0
-    for match in x:
+    for match in matches:
         if match.group(0) == "don't()":
             do_mul = False
         elif match.group(0) == "do()":
