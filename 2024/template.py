@@ -1,5 +1,5 @@
 ## Pull Data
-from get_data import save_data
+from get_data import save_data, timeit
 
 day = 1
 save_data(2024, day)
