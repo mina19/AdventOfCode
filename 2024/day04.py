@@ -8,37 +8,36 @@ data = Path(f"day{day:02d}.txt").read_text().splitlines()
 # data = Path(f"day{day:02d}_sample.txt").read_text().splitlines()
 
 conversion = {"X": 0, "M": 1, "A": 2, "S": 3}
+data = [[conversion[letter] for letter in line] for line in data]
+rows = len(data)
+cols = len(data[0])
+
+directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+
+
+# Helper functions
+def check_neighbors(col, row):
+    neighbors = []
+
+    for dx, dy in directions:
+        new_col, new_row = col + dx, row + dy
+
+        if (0 <= new_row < rows) and (0 <= new_col < cols):
+            neighbor = data[new_row][new_col]
+            neighbors.append((neighbor, (dx, dy)))
+    return neighbors
+
+
+def direction_neighbor(col, row, dx, dy):
+    new_col, new_row = col + dx, row + dy
+    if (0 <= new_row < rows) and (0 <= new_col < cols):
+        return data[new_row][new_col]
+    return 0
 
 
 ## Part 1
-def scan_data(data):
-    data_copy = [[letter for letter in line] for line in data]
-    data = [[conversion[letter] for letter in line] for line in data]
-
-    rows = len(data)
-    cols = len(data[0])
-
-    directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
-
-    def check_neighbors(col, row):
-        neighbors = []
-
-        for dx, dy in directions:
-            new_col, new_row = col + dx, row + dy
-
-            if (0 <= new_row < rows) and (0 <= new_col < cols):
-                neighbor = data[new_row][new_col]
-                neighbors.append((neighbor, (dx, dy)))
-        return neighbors
-
-    def direction_neighbor(col, row, dx, dy):
-        new_col, new_row = col + dx, row + dy
-        if (0 <= new_row < rows) and (0 <= new_col < cols):
-            return data[new_row][new_col]
-        return 0
-
+def scan_data():
     count = 0
-    mydict = {}
     for row in range(rows):
         for col in range(cols):
             current = data[row][col]
@@ -66,16 +65,47 @@ def scan_data(data):
                 ]
                 if next_neighbors2 != []:
                     count += len(next_neighbors2)
-                    mydict[(row, col)] = len(next_neighbors2)
-                    data_copy[row][col] = "."
 
     return count
 
 
-# def print_pretty(data):
-#     for row in data:
-#         print(" ".join(row))
-
 # hideous solution..... will improve later
-output = scan_data(data)
+output = scan_data()
+print(output)
+
+
+# part 2
+def scan_data2():
+    count = 0
+    for row in range(rows):
+        for col in range(cols):
+            current = data[row][col]
+            if current != 2:
+                continue
+            neighbors = check_neighbors(col, row)
+
+            # Check to see if all neighbors are valid
+            # Only relevant neighbors are where difference was 1
+            relevant_directions = [el[1] for el in neighbors if el[0] - current == 1]
+            # Only interested in diagonals
+            good_directions = [(-1, -1), (-1, 1), (1, 1), (1, -1)]
+            relevant_directions = set(good_directions).intersection(relevant_directions)
+
+            if (
+                len(relevant_directions) >= 2
+                and (0 < row < rows - 1)
+                and (0 < col < cols - 1)
+            ):
+                opposite_direction_neighbors = [
+                    direction_neighbor(col, row, -dx, -dy)
+                    for dx, dy in relevant_directions
+                ]
+                if opposite_direction_neighbors.count(1) >= 2:
+                    # Check the direction neighbor in opposite direction is an M
+                    count += 1
+
+    return count
+
+
+output = scan_data2()
 print(output)
