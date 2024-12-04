@@ -99,12 +99,12 @@ def scan_data2():
             )
 
             if len(relevant_directions) >= 2 and (0 < row < rows) and (0 < col < cols):
+                # Check the direction neighbor in opposite direction is an M and that there are 2 of them
                 opposite_direction_neighbors = [
                     direction_neighbor(col, row, -dx, -dy)
                     for dx, dy in relevant_directions
                 ]
                 if opposite_direction_neighbors.count(1) >= 2:
-                    # Check the direction neighbor in opposite direction is an M
                     count += 1
 
     return count
