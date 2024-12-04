@@ -4,9 +4,12 @@ from pathlib import Path
 from get_data import save_data, timeit
 
 save_data(2024, day := 4)
-data = Path(f"day{day:02d}.txt").read_text().splitlines()
-# data = Path(f"day{day:02d}_sample.txt").read_text().splitlines()
 
+# Read in data
+# data = Path(f"day{day:02d}.txt").read_text().splitlines()
+data = Path(f"day{day:02d}_sample.txt").read_text().splitlines()
+
+# Convert data to numbers for easier analysis
 conversion = {"X": 0, "M": 1, "A": 2, "S": 3}
 data = [[conversion[letter] for letter in line] for line in data]
 rows = len(data)
@@ -70,19 +73,19 @@ def scan_data():
     return count
 
 
-# hideous solution..... will improve later
+# Hideous solution..... will improve later.... maybe....
 output = scan_data()
 print(output)
 
 
-# part 2
+# Part 2
 @timeit
 def scan_data2():
     count = 0
     for row in range(rows):
         for col in range(cols):
             current = data[row][col]
-            if current != 2:
+            if current != 2:  # Check with the letter A
                 continue
             neighbors = check_neighbors(col, row)
 
@@ -93,11 +96,7 @@ def scan_data2():
             good_directions = [(-1, -1), (-1, 1), (1, 1), (1, -1)]
             relevant_directions = set(good_directions).intersection(relevant_directions)
 
-            if (
-                len(relevant_directions) >= 2
-                and (0 < row < rows - 1)
-                and (0 < col < cols - 1)
-            ):
+            if len(relevant_directions) >= 2 and (0 < row < rows) and (0 < col < cols):
                 opposite_direction_neighbors = [
                     direction_neighbor(col, row, -dx, -dy)
                     for dx, dy in relevant_directions
