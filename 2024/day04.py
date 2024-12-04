@@ -36,6 +36,7 @@ def direction_neighbor(col, row, dx, dy):
 
 
 ## Part 1
+@timeit
 def scan_data():
     count = 0
     for row in range(rows):
@@ -75,6 +76,7 @@ print(output)
 
 
 # part 2
+@timeit
 def scan_data2():
     count = 0
     for row in range(rows):
