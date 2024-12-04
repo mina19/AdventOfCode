@@ -50,8 +50,7 @@ def scan_data():
                 continue
             neighbors = check_neighbors(col, row)
 
-            # Check to see if all neighbors are valid
-            # Only relevant neighbors are where difference was 1
+            # Only relevant neighbors are where difference is 1
             relevant_directions = [el[1] for el in neighbors if el[0] - current == 1]
             # Check for each of these if the next letter/number is correct
             # It should be a 2 / letter A
@@ -90,15 +89,14 @@ def scan_data2():
                 continue
             neighbors = check_neighbors(col, row)
 
-            # Check to see if all neighbors are valid
-            # Only relevant neighbors are where difference was 1
+            # Only relevant neighbors are where difference is 1
             relevant_directions = [el[1] for el in neighbors if el[0] - current == 1]
             # Only interested in diagonals
             relevant_directions = set(diagonal_directions).intersection(
                 relevant_directions
             )
 
-            if len(relevant_directions) >= 2 and (0 < row < rows) and (0 < col < cols):
+            if len(relevant_directions) >= 2:
                 # Check the direction neighbor in opposite direction is a 1 / letter M and that there are 2 of them
                 opposite_direction_neighbors = [
                     direction_neighbor(col, row, -dx, -dy)
