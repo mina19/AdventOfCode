@@ -16,6 +16,7 @@ rows = len(data)
 cols = len(data[0])
 
 directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+diagonal_directions = [(-1, -1), (-1, 1), (1, 1), (1, -1)]
 
 
 # Helper functions
@@ -93,8 +94,9 @@ def scan_data2():
             # Only relevant neighbors are where difference was 1
             relevant_directions = [el[1] for el in neighbors if el[0] - current == 1]
             # Only interested in diagonals
-            good_directions = [(-1, -1), (-1, 1), (1, 1), (1, -1)]
-            relevant_directions = set(good_directions).intersection(relevant_directions)
+            relevant_directions = set(diagonal_directions).intersection(
+                relevant_directions
+            )
 
             if len(relevant_directions) >= 2 and (0 < row < rows) and (0 < col < cols):
                 opposite_direction_neighbors = [
