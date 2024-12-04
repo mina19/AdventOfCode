@@ -54,7 +54,7 @@ def scan_data():
             # Only relevant neighbors are where difference was 1
             relevant_directions = [el[1] for el in neighbors if el[0] - current == 1]
             # Check for each of these if the next letter/number is correct
-            # It should be a 2
+            # It should be a 2 / letter A
             next_neighbors1 = [
                 (dx, dy)
                 for dx, dy in relevant_directions
@@ -62,7 +62,7 @@ def scan_data():
             ]
             if next_neighbors1 != []:
                 # Check if the next letter/number is correct
-                # It should be a 3
+                # It should be a 3 / letter S
                 next_neighbors2 = [
                     (dx, dy)
                     for dx, dy in next_neighbors1
@@ -99,7 +99,7 @@ def scan_data2():
             )
 
             if len(relevant_directions) >= 2 and (0 < row < rows) and (0 < col < cols):
-                # Check the direction neighbor in opposite direction is an M and that there are 2 of them
+                # Check the direction neighbor in opposite direction is a 1 / letter M and that there are 2 of them
                 opposite_direction_neighbors = [
                     direction_neighbor(col, row, -dx, -dy)
                     for dx, dy in relevant_directions
