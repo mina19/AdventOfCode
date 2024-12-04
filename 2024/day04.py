@@ -1,19 +1,19 @@
 ## Pull Data
 from pathlib import Path
 
+import numpy as np
 from get_data import save_data, timeit
 
 save_data(2024, day := 4)
 
 # Read in data
-# data = Path(f"day{day:02d}.txt").read_text().splitlines()
-data = Path(f"day{day:02d}_sample.txt").read_text().splitlines()
+data = Path(f"day{day:02d}.txt").read_text().splitlines()
+# data = Path(f"day{day:02d}_sample.txt").read_text().splitlines()
 
 # Convert data to numbers for easier analysis
 conversion = {"X": 0, "M": 1, "A": 2, "S": 3}
-data = [[conversion[letter] for letter in line] for line in data]
-rows = len(data)
-cols = len(data[0])
+data = np.array([[conversion[letter] for letter in line] for line in data])
+rows, cols = data.shape
 
 directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 diagonal_directions = [(-1, -1), (-1, 1), (1, 1), (1, -1)]
