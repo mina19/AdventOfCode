@@ -40,9 +40,38 @@ print(part1())
 ## Part 2
 
 
+def fix_update(update):
+    relevant_rules = []
+    for rule in rules:
+        if rule[0] in update and rule[1] in update:
+            relevant_rules.append(rule)
+
+    def find_last(rules, update):
+        front_numbers = [rule[0] for rule in rules]
+        num = list(set(update).difference(front_numbers))[0]
+        return num
+
+    # Construct half correct update
+    new_update = []
+    while len(new_update) < len(update):
+        last_num = find_last(relevant_rules, update)
+        # Find which rule has last_num in the last position
+        useless_rules = [rule for rule in relevant_rules if rule[1] == last_num]
+        for useless_rule in useless_rules:
+            relevant_rules.remove(useless_rule)
+        update.remove(last_num)
+        new_update.insert(0, last_num)
+
+    return new_update
+
+
 @timeit
 def part2():
-    pass
+    result = []
+    for update in updates:
+        if not check_update(update):
+            result.append(fix_update(update))
+    return sum([item[0] for item in result])
 
 
-part2()
+print(part2())
