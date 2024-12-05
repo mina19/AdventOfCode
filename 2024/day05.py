@@ -1,4 +1,5 @@
 ## Pull Data
+from collections import Counter
 from pathlib import Path
 
 from get_data import save_data, timeit
@@ -27,7 +28,7 @@ def check_update(update):
 
 
 # This is faster than the above
-def check_update2(update):
+def check_update_list_comprehension(update):
     return not any(
         rule[0] in update
         and rule[1] in update
@@ -38,12 +39,22 @@ def check_update2(update):
 
 @timeit
 def part1():
+    return sum([update[len(update) // 2] for update in updates if check_update(update)])
+
+
+@timeit
+def part1_list_comprehension():
     return sum(
-        [update[len(update) // 2] for update in updates if check_update2(update)]
+        [
+            update[len(update) // 2]
+            for update in updates
+            if check_update_list_comprehension(update)
+        ]
     )
 
 
 print(part1())
+print(part1_list_comprehension())
 
 
 ## Part 2
@@ -77,6 +88,17 @@ def fix_update(update):
     return new_update
 
 
+# Faster way to write the above using a Counter
+def fix_update2(update):
+    relevant_rules = [rule for rule in rules if rule[0] in update and rule[1] in update]
+
+    # Construct correct update
+    x = Counter([i[0] for i in relevant_rules])
+    y = Counter([i[1] for i in relevant_rules])
+    new_update = [i[0] for i in x.most_common()] + [i[0] for i in y.most_common(1)]
+    return new_update
+
+
 @timeit
 def part2():
     return sum(
@@ -88,4 +110,16 @@ def part2():
     )
 
 
+@timeit
+def part2_counter():
+    return sum(
+        [
+            fix_update2(update)[len(update) // 2]
+            for update in updates
+            if not check_update(update)
+        ]
+    )
+
+
 print(part2())
+print(part2_counter())
