@@ -12,15 +12,17 @@ rules = [line.split("|") for line in data if "|" in line]
 rules = [[int(x) for x in sublist] for sublist in rules]
 updates = [line.split(",") for line in data if "," in line]
 updates = [[int(x) for x in sublist] for sublist in updates]
+relevant_rules_dict = {
+    str(update): [rule for rule in rules if rule[0] in update and rule[1] in update]
+    for update in updates
+}
 
 
 ## Part 1
 def check_update(update):
     return not any(
-        rule[0] in update
-        and rule[1] in update
-        and update.index(rule[0]) > update.index(rule[1])
-        for rule in rules
+        update.index(rule[0]) > update.index(rule[1])
+        for rule in relevant_rules_dict[str(update)]
     )
 
 
@@ -35,7 +37,7 @@ print(part1())
 ## Part 2
 # Faster way to solve using a Counter
 def fix_update(update):
-    relevant_rules = [rule for rule in rules if rule[0] in update and rule[1] in update]
+    relevant_rules = relevant_rules_dict[str(update)]
 
     # Construct correct update
     x = Counter([i[0] for i in relevant_rules])
@@ -45,7 +47,7 @@ def fix_update(update):
 
 
 def fix_update_slow(update):
-    relevant_rules = [rule for rule in rules if rule[0] in update and rule[1] in update]
+    relevant_rules = relevant_rules_dict[str(update)]
 
     def find_last(rules, update):
         front_numbers = [rule[0] for rule in rules]
