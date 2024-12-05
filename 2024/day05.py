@@ -36,6 +36,15 @@ print(part1())
 
 ## Part 2
 # Faster way to solve using a Counter
+def fix_update_fast(update):
+    relevant_rules = relevant_rules_dict[str(update)]
+
+    # Return the middle most common number in the first position
+    x = Counter([rule[0] for rule in relevant_rules])
+    return x.most_common()[len(update) // 2][0]
+
+
+# Faster way to solve using a Counter
 def fix_update(update):
     relevant_rules = relevant_rules_dict[str(update)]
 
@@ -77,6 +86,13 @@ def fix_update_slow(update):
 
 
 @timeit
+def part2_fast():
+    return sum(
+        [fix_update_fast(update) for update in updates if not check_update(update)]
+    )
+
+
+@timeit
 def part2():
     return sum(
         [
@@ -98,5 +114,6 @@ def part2_slow():
     )
 
 
+print(part2_fast())
 print(part2())
 print(part2_slow())
