@@ -27,7 +27,7 @@ def check_neighbors(col, row):
         new_col, new_row = col + dx, row + dy
 
         if (0 <= new_row < rows) and (0 <= new_col < cols):
-            neighbor = data[new_row][new_col]
+            neighbor = data[new_row, new_col]
             neighbors.append((neighbor, (dx, dy)))
     return neighbors
 
@@ -35,17 +35,17 @@ def check_neighbors(col, row):
 def direction_neighbor(col, row, dx, dy):
     new_col, new_row = col + dx, row + dy
     if (0 <= new_row < rows) and (0 <= new_col < cols):
-        return data[new_row][new_col]
-    return 0
+        return data[new_row, new_col]
+    return -1
 
 
 ## Part 1
 @timeit
-def scan_data():
+def part1():
     count = 0
     for row in range(rows):
         for col in range(cols):
-            current = data[row][col]
+            current = data[row, col]
             if current != 0:
                 continue
             neighbors = check_neighbors(col, row)
@@ -73,18 +73,43 @@ def scan_data():
     return count
 
 
-# Hideous solution..... will improve later.... maybe....
-output = scan_data()
+# Original solution
+output = part1()
 print(output)
+
+
+# Different way to do Part 1
+## Part 1
+@timeit
+def part1_b():
+    count = 0
+    for row in range(rows):
+        for col in range(cols):
+            current = data[row, col]
+            if current != 0:
+                continue
+
+            for dx, dy in directions:
+                current = ""
+                for step in range(4):
+                    current += str(direction_neighbor(col, row, dx * step, dy * step))
+
+                if current == "0123":
+                    count += 1
+
+    return count
+
+
+print(part1_b())
 
 
 # Part 2
 @timeit
-def scan_data2():
+def part2():
     count = 0
     for row in range(rows):
         for col in range(cols):
-            current = data[row][col]
+            current = data[row, col]
             if current != 2:  # Check with the letter A
                 continue
             neighbors = check_neighbors(col, row)
@@ -102,11 +127,11 @@ def scan_data2():
                     direction_neighbor(col, row, -dx, -dy)
                     for dx, dy in relevant_directions
                 ]
-                if opposite_direction_neighbors.count(1) >= 2:
+                if opposite_direction_neighbors.count(1) == 2:
                     count += 1
 
     return count
 
 
-output = scan_data2()
+output = part2()
 print(output)
