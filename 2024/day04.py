@@ -73,7 +73,7 @@ def part1():
     return count
 
 
-# Hideous solution..... will improve later.... maybe....
+# Original solution
 output = part1()
 print(output)
 
@@ -127,7 +127,7 @@ def part2():
                     direction_neighbor(col, row, -dx, -dy)
                     for dx, dy in relevant_directions
                 ]
-                if opposite_direction_neighbors.count(1) >= 2:
+                if opposite_direction_neighbors.count(1) == 2:
                     count += 1
 
     return count
