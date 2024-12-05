@@ -26,9 +26,21 @@ def check_update(update):
     return result
 
 
+# This is faster than the above
+def check_update2(update):
+    return not any(
+        rule[0] in update
+        and rule[1] in update
+        and update.index(rule[0]) > update.index(rule[1])
+        for rule in rules
+    )
+
+
 @timeit
 def part1():
-    return sum([update[len(update) // 2] for update in updates if check_update(update)])
+    return sum(
+        [update[len(update) // 2] for update in updates if check_update2(update)]
+    )
 
 
 print(part1())
