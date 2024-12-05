@@ -51,15 +51,23 @@ def fix_update(update):
         num = list(set(update).difference(front_numbers))[0]
         return num
 
-    # Construct half correct update
+    # Construct correct update
     new_update = []
+    update_copy = update.copy()
     while len(new_update) < len(update):
-        last_num = find_last(relevant_rules, update)
-        # Find which rule has last_num in the last position
+        last_num = find_last(relevant_rules, update_copy)
+
+        # Find which rules has last_num in the last position
         useless_rules = [rule for rule in relevant_rules if rule[1] == last_num]
+
+        # These are useless so remove them
         for useless_rule in useless_rules:
             relevant_rules.remove(useless_rule)
-        update.remove(last_num)
+
+        # Need to remove the last number from update copy so we can find the next last number
+        update_copy.remove(last_num)
+
+        # Construct corrected update
         new_update.insert(0, last_num)
 
     return new_update
@@ -67,11 +75,12 @@ def fix_update(update):
 
 @timeit
 def part2():
-    result = []
+    total = 0
     for update in updates:
         if not check_update(update):
-            result.append(fix_update(update))
-    return sum([item[0] for item in result])
+            total += fix_update(update)[len(update) // 2]
+
+    return total
 
 
 print(part2())
