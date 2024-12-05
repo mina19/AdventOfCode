@@ -16,19 +16,6 @@ updates = [[int(x) for x in sublist] for sublist in updates]
 
 ## Part 1
 def check_update(update):
-    result = True
-    for rule in rules:
-        if rule[0] in update and rule[1] in update:
-            ind1 = update.index(rule[0])
-            ind2 = update.index(rule[1])
-            if ind1 > ind2:
-                result = False
-
-    return result
-
-
-# This is faster than the above
-def check_update_list_comprehension(update):
     return not any(
         rule[0] in update
         and rule[1] in update
@@ -42,23 +29,22 @@ def part1():
     return sum([update[len(update) // 2] for update in updates if check_update(update)])
 
 
-@timeit
-def part1_list_comprehension():
-    return sum(
-        [
-            update[len(update) // 2]
-            for update in updates
-            if check_update_list_comprehension(update)
-        ]
-    )
-
-
 print(part1())
-print(part1_list_comprehension())
 
 
 ## Part 2
+# Faster way to solve using a Counter
 def fix_update(update):
+    relevant_rules = [rule for rule in rules if rule[0] in update and rule[1] in update]
+
+    # Construct correct update
+    x = Counter([i[0] for i in relevant_rules])
+    y = Counter([i[1] for i in relevant_rules])
+    new_update = [i[0] for i in x.most_common()] + [i[0] for i in y.most_common(1)]
+    return new_update
+
+
+def fix_update_slow(update):
     relevant_rules = [rule for rule in rules if rule[0] in update and rule[1] in update]
 
     def find_last(rules, update):
@@ -88,17 +74,6 @@ def fix_update(update):
     return new_update
 
 
-# Faster way to write the above using a Counter
-def fix_update2(update):
-    relevant_rules = [rule for rule in rules if rule[0] in update and rule[1] in update]
-
-    # Construct correct update
-    x = Counter([i[0] for i in relevant_rules])
-    y = Counter([i[1] for i in relevant_rules])
-    new_update = [i[0] for i in x.most_common()] + [i[0] for i in y.most_common(1)]
-    return new_update
-
-
 @timeit
 def part2():
     return sum(
@@ -111,10 +86,10 @@ def part2():
 
 
 @timeit
-def part2_counter():
+def part2_slow():
     return sum(
         [
-            fix_update2(update)[len(update) // 2]
+            fix_update_slow(update)[len(update) // 2]
             for update in updates
             if not check_update(update)
         ]
@@ -122,4 +97,4 @@ def part2_counter():
 
 
 print(part2())
-print(part2_counter())
+print(part2_slow())
