@@ -37,9 +37,9 @@ def part1():
 
 
 print(part1())
+
+
 ## Part 2
-
-
 def fix_update(update):
     relevant_rules = []
     for rule in rules:
