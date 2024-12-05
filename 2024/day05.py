@@ -28,12 +28,7 @@ def check_update(update):
 
 @timeit
 def part1():
-    total = 0
-    for update in updates:
-        if check_update(update):
-            total += update[len(update) // 2]
-
-    return total
+    return sum([update[len(update) // 2] for update in updates if check_update(update)])
 
 
 print(part1())
@@ -41,10 +36,7 @@ print(part1())
 
 ## Part 2
 def fix_update(update):
-    relevant_rules = []
-    for rule in rules:
-        if rule[0] in update and rule[1] in update:
-            relevant_rules.append(rule)
+    relevant_rules = [rule for rule in rules if rule[0] in update and rule[1] in update]
 
     def find_last(rules, update):
         front_numbers = [rule[0] for rule in rules]
@@ -75,12 +67,13 @@ def fix_update(update):
 
 @timeit
 def part2():
-    total = 0
-    for update in updates:
-        if not check_update(update):
-            total += fix_update(update)[len(update) // 2]
-
-    return total
+    return sum(
+        [
+            fix_update(update)[len(update) // 2]
+            for update in updates
+            if not check_update(update)
+        ]
+    )
 
 
 print(part2())
