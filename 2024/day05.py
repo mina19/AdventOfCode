@@ -40,9 +40,9 @@ def fix_update(update):
     relevant_rules = relevant_rules_dict[str(update)]
 
     # Construct correct update
-    x = Counter([i[0] for i in relevant_rules])
-    y = Counter([i[1] for i in relevant_rules])
-    new_update = [i[0] for i in x.most_common()] + [i[0] for i in y.most_common(1)]
+    x = Counter([rule[0] for rule in relevant_rules])
+    y = Counter([rule[1] for rule in relevant_rules])
+    new_update = [i[0] for i in x.most_common()] + [y.most_common(1)[0]]
     return new_update
 
 
