@@ -14,7 +14,7 @@ data_dict = defaultdict(
     lambda: defaultdict(lambda: "!"),  # Invalid row
     enumerate(
         defaultdict((lambda: "!"), enumerate(line)) for line in data
-    ),  # Invalid column,
+    ),  # Invalid column
 )
 
 # Shape of data
@@ -86,6 +86,7 @@ def part2():
             i = start_i
             j = start_j
 
+            # Already a wall or original starting place
             if data_dict_copy[obstruction_i][obstruction_j] != ".":
                 continue
 
@@ -115,4 +116,5 @@ def part2():
     return valid_obstruction_count
 
 
+# This is not fast... Tries all spots...
 print(part2())
