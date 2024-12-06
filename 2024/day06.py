@@ -9,7 +9,7 @@ save_data(2024, day := 6)
 data = Path(f"day{day:02d}.txt").read_text().splitlines()
 # data = Path(f"2024/day{day:02d}_sample.txt").read_text().splitlines()
 
-# Hash the data. If we hit boundary return a !
+# Hash the data. If we hit a boundary return !
 data_dict = defaultdict(
     lambda: defaultdict(lambda: "!"),  # Invalid row
     enumerate(
