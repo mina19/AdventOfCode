@@ -38,6 +38,11 @@ def part1():
 
         # If hitting a wall (#), rotate direction right
         if data_dict[i + current[0]][j + current[1]] == "#":
+            # Direction order: [(-1, 0), (0, 1), (1, 0), (0, -1)]
+            # (-1, 0) -> (0, 1)   # North -> East
+            # (0, 1) -> (1, 0)    # East -> South
+            # (1, 0) -> (0, -1)   # South -> West
+            # (0, -1) -> (-1, 0)  # West -> North
             current = (current[1], -current[0])
         else:
             # Move in current direction
