@@ -1,83 +1,53 @@
 ## Pull Data
 from pathlib import Path
-import numpy as np
+from collections import defaultdict
 
 from get_data import save_data, timeit
 
 save_data(2024, day := 6)
 data = Path(f"day{day:02d}.txt").read_text().splitlines()
 data = Path(f"2024/day{day:02d}_sample.txt").read_text().splitlines()
-conversion = {".": 0, "#": 1, "^": 2}
-data = np.array([[conversion[el] for el in line] for line in data])
 
-rows, cols = data.shape
-directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+# Hash the data. If we hit boundary return a !
+data_dict = defaultdict(
+    (lambda: defaultdict(lambda: "!")),
+    enumerate(defaultdict((lambda: "!"), enumerate(line)) for line in data),
+)
+
 
 ## Part 1
-
-
 @timeit
 def part1():
-    # Copy original data
-    copy = np.copy(data)
-
-    # Set up tracking
-    visited_coords = set()
-
-    # Starting coordinates
-    coordinates = np.argwhere(copy == 2)
-    start_row = int(coordinates[0][0])
-    start_col = int(coordinates[0][1])
-    visited_coords.add((start_row, start_col))
-
-    def traverse_direction(direction, starting_coordinates):
-        if direction == (1, 0):
-            for i in range(starting_coordinates[0], -1, -1):
-                if copy[i, starting_coordinates[1]] != 1:
-                    visited_coords.add((i, starting_coordinates[1]))
-                    if i == 0:
-                        return 0, 0, True
-                else:
-                    return i + 1, starting_coordinates[1], i == 0
-        elif direction == (0, 1):
-            for j in range(starting_coordinates[1], cols):
-                if copy[starting_coordinates[0], j] != 1:
-                    visited_coords.add((starting_coordinates[0], j))
-                else:
-                    return starting_coordinates[0], j - 1, j == cols
-        elif direction == (-1, 0):
-            for i in range(starting_coordinates[0], rows):
-                if copy[i, starting_coordinates[1]] != 1:
-                    visited_coords.add((i, starting_coordinates[1]))
-                else:
-                    return i - 1, starting_coordinates[1], i == rows
-        else:
-            for j in range(starting_coordinates[1], -1, -1):
-                if copy[starting_coordinates[0], j] != 1:
-                    visited_coords.add((starting_coordinates[0], j))
-                else:
-                    return starting_coordinates[0], j + 1, j == -1
-
-    def loop_all_directions(start_row, start_col):
-        for direction in directions:
-            if traverse_direction(direction, (start_row, start_col)):
-                start_row, start_col, exit = traverse_direction(
-                    direction, (start_row, start_col)
-                )
-        return start_row, start_col, exit
-
+    # Lazy way to find the coordinates of ^
     i = 0
-    while i < 5:
-        if loop_all_directions(start_row, start_col):
-            start_row, start_col, exit = loop_all_directions(start_row, start_col)
-        else:
-            exit = True
-        i += 1
+    j = 0
+    for row in range(len(data)):
+        for col in range(len(data[0])):
+            if data_dict[row][col] == "^":
+                i = row
+                j = col
 
-    return len(visited_coords)
+    # Begin traversing the grid/dictionary
+    result = 0
+    current = (-1, 0)  # Starting direction North
+    while data_dict[i][j] != "!":  # Continue until hitting boundary
+        # Mark current position as visited
+        if data_dict[i][j] != "X":
+            data_dict[i][j] = "X"
+            result += 1
+
+        # If hitting a wall (#), rotate direction right
+        if data_dict[i + current[0]][j + current[1]] == "#":
+            current = (current[1], -current[0])
+        else:
+            # Move in current direction
+            i += current[0]
+            j += current[1]
+    return result
 
 
 print(part1())
+
 ## Part 2
 
 
