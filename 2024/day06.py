@@ -22,20 +22,27 @@ rows = len(data)
 cols = len(data[0])
 
 
+# Helper function
+def find_start():
+    # Lazy way to find the coordinates of ^
+    i = 0
+    j = 0
+    for row in range(rows):
+        for col in range(cols):
+            if data_dict[row][col] == "^":
+                i = row
+                j = col
+    return i, j
+
+
 ## Part 1
 @timeit
 def part1():
     # Nested dictionary requires deepcopy
     data_dict_copy = copy.deepcopy(data_dict)
 
-    # Lazy way to find the coordinates of ^
-    i = 0
-    j = 0
-    for row in range(rows):
-        for col in range(cols):
-            if data_dict_copy[row][col] == "^":
-                i = row
-                j = col
+    # Find ^
+    i, j = find_start()
 
     # Begin traversing the grid/dictionary
     result = 0
@@ -70,14 +77,8 @@ def part2():
     # Nested dictionary requires deepcopy
     data_dict_copy = copy.deepcopy(data_dict)
 
-    # Lazy way to find the coordinates of ^
-    start_i = 0
-    start_j = 0
-    for row in range(rows):
-        for col in range(cols):
-            if data_dict_copy[row][col] == "^":
-                start_i = row
-                start_j = col
+    # Find ^
+    start_i, start_j = find_start()
 
     valid_obstruction_count = 0
     for obstruction_i in range(rows):
