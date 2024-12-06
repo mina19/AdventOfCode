@@ -46,7 +46,7 @@ def part1():
 
     # Begin traversing the grid/dictionary
     result = 0
-    current = (-1, 0)  # Starting direction North
+    di, dj = -1, 0  # Starting direction North
     while data_dict_copy[i][j] != "!":  # Continue until hitting boundary
         # Mark current position as visited
         if data_dict_copy[i][j] != "X":
@@ -54,17 +54,17 @@ def part1():
             result += 1
 
         # If hitting a wall (#), rotate direction right
-        if data_dict_copy[i + current[0]][j + current[1]] == "#":
+        if data_dict_copy[i + di][j + dj] == "#":
             # Direction order: [(-1, 0), (0, 1), (1, 0), (0, -1)]
             # (-1, 0) -> (0, 1)   # North -> East
             # (0, 1) -> (1, 0)    # East -> South
             # (1, 0) -> (0, -1)   # South -> West
             # (0, -1) -> (-1, 0)  # West -> North
-            current = (current[1], -current[0])
+            di, dj = dj, -di
         else:
             # Move in current direction
-            i += current[0]
-            j += current[1]
+            i += di
+            j += dj
     return result
 
 
@@ -96,16 +96,16 @@ def part2():
 
             # Count number of steps for this obstruction
             steps = 0
-            current = (-1, 0)  # Starting direction North
+            di, dj = -1, 0  # Starting direction North
             while data_dict_copy[i][j] != "!":
                 steps += 1
-                if data_dict_copy[i + current[0]][j + current[1]] == "#":
+                if data_dict_copy[i + di][j + dj] == "#":
                     # Hit a wall so update direction
-                    current = (current[1], -current[0])
+                    di, dj = (dj, -di)
                 else:
                     # Move in current direction
-                    i += current[0]
-                    j += current[1]
+                    i += di
+                    j += dj
 
                 # Shouldn't have to step more than area of grid
                 if steps >= rows * cols:
