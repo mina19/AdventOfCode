@@ -5,71 +5,90 @@ from get_data import save_data, timeit
 
 save_data(2024, day := 7)
 data = Path(f"2024/7/day{day:02d}.txt").read_text().splitlines()
-# data = Path(f"2024/7/day{day:02d}_sample.txt").read_text().splitlines()
+data = Path(f"2024/7/day{day:02d}_sample.txt").read_text().splitlines()
 
 outputs = [int(line.split(":")[0]) for line in data]
 inputs = [[int(num) for num in line.split(":")[1].split()] for line in data]
 
 
 # Helper functions
-def all_combinations(nums, concat=False):
-    # Create all possible results of * and +
-    if len(nums) == 1:
+def all_combinations(input, concat=False):
+    # Create all possible results of * and + and concatenation if concat is True
+    # Operators are always evaluated left-to-right, not according to precedence rules.
+
+    # Example: all_combinations_memoized([81,40,27][::-1], concat=True)
+    # (40,) {40} and (81,) {81}
+    # (40, 81) {3240 = 81 * 40, 121 = 81 + 40, 8140 = 81 || 40}
+    # (27, 40, 81) {
+    #     3267 = (81 * 40) + 27,
+    #     87480 = (81 * 40) * 27,
+    #     324027 = (81 * 40) || 27,
+    #     148 = (81 + 40) + 27,
+    #     3267 = (81 + 40) * 27, (this is a repeat)
+    #     12127 = (81 + 40) || 27,
+    #     219780 = (81 || 40) * 27,
+    #     8167 = (81 || 40) + 27,
+    #     814027 = (81 || 40) || 27,
+    # }
+    # Returns: {3267, 87480, 324027, 148, 3267, 12127, 219780, 8167, 814027}
+
+    if len(input) == 1:
         # Recursive stopping point
-        return set([nums[0]])
+        return set([input[0]])
 
     all_results = set()
 
     # Take all numbers but the first one
-    # This means all numbers but the last number in original list
-    sub_combinations = all_combinations(nums[1:], concat=concat)
+    sub_combinations = all_combinations(input[1:], concat=concat)
 
     # Calculate multiplications and additions
-    all_results.update(nums[0] * x for x in sub_combinations)
-    all_results.update(nums[0] + x for x in sub_combinations)
+    all_results.update(input[0] * x for x in sub_combinations)
+    all_results.update(input[0] + x for x in sub_combinations)
     # If concatenation for Part 2:
     if concat:
-        all_results.update(int(str(x) + str(nums[0])) for x in sub_combinations)
+        all_results.update(int(str(x) + str(input[0])) for x in sub_combinations)
 
     return all_results
 
 
 # Memoizing should make it a bit faster
 # It actually performs worse with concatenation...
-def all_combinations_memoized(nums, memo=None, concat=False):
-    # Create all possible results of * and + using memoization
+def all_combinations_memoized(input, memo=None, concat=False):
+    # Create all possible results of * and + and concatenation if concat is True
+    # Operators are always evaluated left-to-right, not according to precedence rules.
 
     # Initialize memo dictionary if not provided
     if memo is None:
         memo = {}
 
-    # Convert nums to tuple so it can be used as dictionary key
-    nums_key = tuple(nums)
+    # Convert input to tuple so it can be used as dictionary key
+    input_key = tuple(input)
 
     # If we've already calculated this combination, return it
-    if nums_key in memo:
-        return memo[nums_key]
+    if input_key in memo:
+        return memo[input_key]
 
     # Base case: single number
-    if len(nums) == 1:
-        # Save like this: memo[(nums[0],)] = {nums[0]}
-        memo[nums_key] = set([nums[0]])
-        return memo[nums_key]
+    if len(input) == 1:
+        # Save like this: memo[(input[0],)] = {input[0]}
+        memo[input_key] = set([input[0]])
+        return memo[input_key]
 
     all_results = set()
 
     # Get sub-combinations (memoized)
-    sub_combinations = all_combinations_memoized(nums[1:], memo, concat=concat)
+    # Take all numbers but the first one
+    sub_combinations = all_combinations_memoized(input[1:], memo, concat=concat)
 
     # Calculate multiplications and additions
-    all_results.update(nums[0] * x for x in sub_combinations)
-    all_results.update(nums[0] + x for x in sub_combinations)
+    all_results.update(input[0] * x for x in sub_combinations)
+    all_results.update(input[0] + x for x in sub_combinations)
     # If concatenation for Part 2:
     if concat:
-        all_results.update(int(str(x) + str(nums[0])) for x in sub_combinations)
+        all_results.update(int(str(x) + str(input[0])) for x in sub_combinations)
 
     # Store result in memo before returning
-    memo[nums_key] = all_results
+    memo[input_key] = all_results
     return all_results
 
 
