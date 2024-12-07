@@ -1,12 +1,12 @@
 ## Pull Data
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
 from get_data import save_data, timeit
 
 save_data(2024, day := 5)
-data = Path(f"day{day:02d}.txt").read_text().splitlines()
-# data = Path(f"2024/day{day:02d}_sample.txt").read_text().splitlines()
+data = Path(f"2024/5/day{day:02d}.txt").read_text().splitlines()
+# data = Path(f"2024/5/day{day:02d}_sample.txt").read_text().splitlines()
 
 rules = [line.split("|") for line in data if "|" in line]
 rules = [[int(x) for x in sublist] for sublist in rules]
@@ -26,12 +26,53 @@ def check_update(update):
     )
 
 
+# Different way
+# Create dictionary that maps all 2nd numbers to numbers that must precede it
+rules_dict = defaultdict(lambda: [])
+
+for a, b in rules:
+    preceding_numbers = rules_dict[b]
+    preceding_numbers.append(a)
+    rules_dict[b] = preceding_numbers
+
+
+def check_update_fast(update):
+    correct = True
+
+    # Set of all numbers in the update
+    all_numbers = set(update)
+
+    # Set to track processed numbers in the update
+    updated = set()
+
+    for x in update:
+        # Find all numbers that must precede x
+        for preceding_number in rules_dict[x]:
+            # Check if this rule applies by being in all_numbers
+            # If it is, then it needs to be in updated already
+            if preceding_number in all_numbers and preceding_number not in updated:
+                correct = False
+        if not correct:
+            break
+        updated.add(x)
+
+    return correct
+
+
 @timeit
 def part1():
     return sum([update[len(update) // 2] for update in updates if check_update(update)])
 
 
+@timeit
+def part1_fast():
+    return sum(
+        [update[len(update) // 2] for update in updates if check_update_fast(update)]
+    )
+
+
 print(part1())
+print(part1_fast())
 
 
 ## Part 2
