@@ -16,21 +16,27 @@ def all_combinations(input, concat=False):
     # Create all possible results of * and + and concatenation if concat is True
     # Operators are always evaluated left-to-right, not according to precedence rules.
 
-    # Example: all_combinations_memoized([81,40,27][::-1], concat=True)
+    # Example:
+    # all_combinations_memoized([81, 40, 27][::-1], concat=True)
+    # all_combinations_memoized([27, 40, 81], concat=True)
     # (40,) {40} and (81,) {81}
-    # (40, 81) {3240 = 81 * 40, 121 = 81 + 40, 8140 = 81 || 40}
+    # (40, 81) {
+    #     121 = 81 + 40,
+    #     3240 = 81 * 40,
+    #     8140 = 81 || 40
+    # }
     # (27, 40, 81) {
-    #     3267 = (81 * 40) + 27,
+    #     148 = (81 + 40) + 27,
+    #     3267 = (81 + 40) * 27,
+    #     12127 = (81 + 40) || 27,
+    #     3267 = (81 * 40) + 27, (this is a repeat)
     #     87480 = (81 * 40) * 27,
     #     324027 = (81 * 40) || 27,
-    #     148 = (81 + 40) + 27,
-    #     3267 = (81 + 40) * 27, (this is a repeat)
-    #     12127 = (81 + 40) || 27,
-    #     219780 = (81 || 40) * 27,
     #     8167 = (81 || 40) + 27,
+    #     219780 = (81 || 40) * 27,
     #     814027 = (81 || 40) || 27,
     # }
-    # Returns: {3267, 87480, 324027, 148, 3267, 12127, 219780, 8167, 814027}
+    # Returns: {148, 3267, 12127, 87480, 324027, 8167, 219780, 814027}
 
     if len(input) == 1:
         # Recursive stopping point
@@ -42,8 +48,8 @@ def all_combinations(input, concat=False):
     sub_combinations = all_combinations(input[1:], concat=concat)
 
     # Calculate multiplications and additions
-    all_results.update(input[0] * x for x in sub_combinations)
     all_results.update(input[0] + x for x in sub_combinations)
+    all_results.update(input[0] * x for x in sub_combinations)
     # If concatenation for Part 2:
     if concat:
         all_results.update(int(str(x) + str(input[0])) for x in sub_combinations)
@@ -81,8 +87,8 @@ def all_combinations_memoized(input, memo=None, concat=False):
     sub_combinations = all_combinations_memoized(input[1:], memo, concat=concat)
 
     # Calculate multiplications and additions
-    all_results.update(input[0] * x for x in sub_combinations)
     all_results.update(input[0] + x for x in sub_combinations)
+    all_results.update(input[0] * x for x in sub_combinations)
     # If concatenation for Part 2:
     if concat:
         all_results.update(int(str(x) + str(input[0])) for x in sub_combinations)
