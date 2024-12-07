@@ -5,7 +5,7 @@ from get_data import save_data, timeit
 
 save_data(2024, day := 7)
 data = Path(f"2024/7/day{day:02d}.txt").read_text().splitlines()
-data = Path(f"2024/7/day{day:02d}_sample.txt").read_text().splitlines()
+# data = Path(f"2024/7/day{day:02d}_sample.txt").read_text().splitlines()
 
 outputs = [int(line.split(":")[0]) for line in data]
 inputs = [[int(num) for num in line.split(":")[1].split()] for line in data]
@@ -15,6 +15,27 @@ inputs = [[int(num) for num in line.split(":")[1].split()] for line in data]
 def all_combinations(input, concat=False):
     # Create all possible results of * and + and concatenation if concat is True
     # Operators are always evaluated left-to-right, not according to precedence rules.
+
+    # Example:
+    # all_combinations([81, 40, 27][::-1], concat=True)
+    # all_combinations([27, 40, 81], concat=True)
+    # [81] {81}
+    # [40, 81] {
+    #     121 = 81 + 40,
+    #     3240 = 81 * 40,
+    #     8140 = 81 || 40
+    # }
+    # Returns: {
+    #     148 = (81 + 40) + 27,
+    #     3267 = (81 + 40) * 27, # Example of not following precedence rules
+    #     12127 = (81 + 40) || 27,
+    #     3267 = (81 * 40) + 27, (this is a repeat)
+    #     87480 = (81 * 40) * 27,
+    #     324027 = (81 * 40) || 27,
+    #     8167 = (81 || 40) + 27,
+    #     219780 = (81 || 40) * 27,
+    #     814027 = (81 || 40) || 27,
+    # }
 
     if len(input) == 1:
         # Recursive stopping point
@@ -44,15 +65,15 @@ def all_combinations_memoized(input, memo=None, concat=False):
     # Example:
     # all_combinations_memoized([81, 40, 27][::-1], concat=True)
     # all_combinations_memoized([27, 40, 81], concat=True)
-    # (81,) {81}
-    # (40, 81) {
+    # memo[(81,)] = {81}}
+    # memo[(40, 81)] = {
     #     121 = 81 + 40,
     #     3240 = 81 * 40,
     #     8140 = 81 || 40
     # }
-    # Returns: {
+    # Returns: memo[(27, 40, 81)] = {
     #     148 = (81 + 40) + 27,
-    #     3267 = (81 + 40) * 27,
+    #     3267 = (81 + 40) * 27, # Example of not following precedence rules
     #     12127 = (81 + 40) || 27,
     #     3267 = (81 * 40) + 27, (this is a repeat)
     #     87480 = (81 * 40) * 27,
