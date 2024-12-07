@@ -50,7 +50,7 @@ def all_combinations_memoized(input, memo=None, concat=False):
     #     3240 = 81 * 40,
     #     8140 = 81 || 40
     # }
-    # (27, 40, 81) {
+    # Returns: {
     #     148 = (81 + 40) + 27,
     #     3267 = (81 + 40) * 27,
     #     12127 = (81 + 40) || 27,
@@ -61,7 +61,6 @@ def all_combinations_memoized(input, memo=None, concat=False):
     #     219780 = (81 || 40) * 27,
     #     814027 = (81 || 40) || 27,
     # }
-    # Returns: {148, 3267, 12127, 87480, 324027, 8167, 219780, 814027}
 
     # Initialize memo dictionary if not provided
     if memo is None:
