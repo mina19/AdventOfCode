@@ -44,7 +44,7 @@ def all_combinations_memoized(input, memo=None, concat=False):
     # Example:
     # all_combinations_memoized([81, 40, 27][::-1], concat=True)
     # all_combinations_memoized([27, 40, 81], concat=True)
-    # (40,) {40} and (81,) {81}
+    # (81,) {81}
     # (40, 81) {
     #     121 = 81 + 40,
     #     3240 = 81 * 40,
