@@ -11,7 +11,7 @@ inputs = [[int(num) for num in line.split(":")[1].split()] for line in data]
 
 
 # Helper function
-def all_combinations(nums):
+def all_combinations(nums, concat=False):
     # Create all possible results of * and +
     if len(nums) == 1:
         # Recursive stopping point
@@ -21,17 +21,21 @@ def all_combinations(nums):
 
     # Take all numbers but the first one
     # This means all numbers but the last number in original list
-    sub_combinations = all_combinations(nums[1:])
+    sub_combinations = all_combinations(nums[1:], concat=concat)
 
     # Calculate multiplications and additions
     all_results.update(nums[0] * x for x in sub_combinations)
     all_results.update(nums[0] + x for x in sub_combinations)
+    # If concatenation for Part 2:
+    if concat:
+        all_results.update(int(str(x) + str(nums[0])) for x in sub_combinations)
 
     return all_results
 
 
 # Memoizing should make it a bit faster
-def all_combinations_memoized(nums, memo=None):
+# It actually performs worse with concatenation...
+def all_combinations_memoized(nums, memo=None, concat=False):
     # Create all possible results of * and + using memoization
 
     # Initialize memo dictionary if not provided
@@ -54,11 +58,14 @@ def all_combinations_memoized(nums, memo=None):
     all_results = set()
 
     # Get sub-combinations (memoized)
-    sub_combinations = all_combinations_memoized(nums[1:], memo)
+    sub_combinations = all_combinations_memoized(nums[1:], memo, concat=concat)
 
     # Calculate multiplications and additions
     all_results.update(nums[0] * x for x in sub_combinations)
     all_results.update(nums[0] + x for x in sub_combinations)
+    # If concatenation for Part 2:
+    if concat:
+        all_results.update(int(str(x) + str(nums[0])) for x in sub_combinations)
 
     # Store result in memo before returning
     memo[nums_key] = all_results
@@ -68,22 +75,24 @@ def all_combinations_memoized(nums, memo=None):
 ## Part 1
 @timeit
 def part1():
-    result = 0
-    for input, output in zip(inputs, outputs):
-        all_results = all_combinations(input[::-1])
-        if output in all_results:
-            result += output
-    return result
+    return sum(
+        [
+            output
+            for input, output in zip(inputs, outputs)
+            if output in all_combinations(input[::-1])
+        ]
+    )
 
 
 @timeit
 def part1_memoized():
-    result = 0
-    for input, output in zip(inputs, outputs):
-        all_results = all_combinations_memoized(input[::-1])
-        if output in all_results:
-            result += output
-    return result
+    return sum(
+        [
+            output
+            for input, output in zip(inputs, outputs)
+            if output in all_combinations_memoized(input[::-1])
+        ]
+    )
 
 
 print(part1())
@@ -91,9 +100,28 @@ print(part1_memoized())
 
 
 ## Part 2
+# Concatenation....
 @timeit
 def part2():
-    pass
+    return sum(
+        [
+            output
+            for input, output in zip(inputs, outputs)
+            if output in all_combinations(input[::-1], concat=True)
+        ]
+    )
 
 
-part2()
+@timeit
+def part2_memoized():
+    return sum(
+        [
+            output
+            for input, output in zip(inputs, outputs)
+            if output in all_combinations_memoized(input[::-1], concat=True)
+        ]
+    )
+
+
+print(part2())
+print(part2_memoized())
