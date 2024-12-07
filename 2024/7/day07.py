@@ -6,11 +6,12 @@ from get_data import save_data, timeit
 save_data(2024, day := 7)
 data = Path(f"2024/7/day{day:02d}.txt").read_text().splitlines()
 # data = Path(f"2024/7/day{day:02d}_sample.txt").read_text().splitlines()
+
 outputs = [int(line.split(":")[0]) for line in data]
 inputs = [[int(num) for num in line.split(":")[1].split()] for line in data]
 
 
-# Helper function
+# Helper functions
 def all_combinations(nums, concat=False):
     # Create all possible results of * and +
     if len(nums) == 1:
