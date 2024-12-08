@@ -6,8 +6,7 @@ from get_data import save_data, timeit
 
 save_data(2024, day := 3)
 
-data = Path(f"day{day:02d}.txt").read_text()
-# data = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"
+data = Path(f"2024/3/day{day:02d}.txt").read_text()
 
 ## Part 1
 pattern = r"mul\((\d+),(\d+)\)"

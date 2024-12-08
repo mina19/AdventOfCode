@@ -6,7 +6,7 @@ from get_data import save_data
 save_data(2024, day := 1)
 
 ## Part 1
-data = Path(f"day{day:02d}.txt").read_text().splitlines()
+data = Path(f"2024/1/day{day:02d}.txt").read_text().splitlines()
 left = [int(nums.split()[0]) for nums in data]
 right = [int(nums.split()[1]) for nums in data]
 

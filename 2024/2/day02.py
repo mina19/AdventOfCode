@@ -8,7 +8,7 @@ from get_data import save_data, timeit
 save_data(2024, day := 2)
 
 ## Part 1
-data = Path(f"day{day:02d}.txt").read_text().splitlines()
+data = Path(f"2024/2/day{day:02d}.txt").read_text().splitlines()
 data = [[int(num) for num in nums_list.split()] for nums_list in data]
 
 

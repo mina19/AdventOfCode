@@ -7,8 +7,8 @@ from get_data import save_data, timeit
 save_data(2024, day := 4)
 
 # Read in data
-data = Path(f"day{day:02d}.txt").read_text().splitlines()
-# data = Path(f"day{day:02d}_sample.txt").read_text().splitlines()
+data = Path(f"2024/4/day{day:02d}.txt").read_text().splitlines()
+# data = Path(f"2024/4day{day:02d}_sample.txt").read_text().splitlines()
 
 # Convert data to numbers for easier analysis
 conversion = {"X": 0, "M": 1, "A": 2, "S": 3}
