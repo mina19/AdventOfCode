@@ -44,7 +44,8 @@ def find_frequencies():
 frequency_dict = find_frequencies()
 
 
-def find_antinodes():
+## Part 1
+def find_antinodes_pt1():
     # An antinode occurs at any point that is perfectly
     # in line with two antennas of the same frequency
     # - but only when one of the antennas is twice as
@@ -68,10 +69,10 @@ def find_antinodes():
         drow = row2 - row1
         dcol = col2 - col1
 
-        # Point before point1
+        # Point before pair[0]
         point_before = (row1 - drow, col1 - dcol)
 
-        # Point after point2
+        # Point after pair[1]
         point_after = (row2 + drow, col2 + dcol)
 
         return [point_before, point_after]
@@ -91,20 +92,75 @@ def find_antinodes():
     return all_antinodes
 
 
-## Part 1
 @timeit
 def part1():
-    all_antinodes = find_antinodes()
-    print(len(all_antinodes))
+    all_antinodes = find_antinodes_pt1()
+    return len(all_antinodes)
 
 
-part1()
+print(part1())
+
+
 ## Part 2
+def find_antinodes_pt2():
+    # Now includes resonant harmonics lol
+    frequency_dict = find_frequencies()
+
+    # First find all pairs for each frequency
+    all_pairs = {
+        frequency_key: list(combinations(coords, 2))
+        for frequency_key, coords in frequency_dict.items()
+    }
+
+    # For each pair in frequency find possible antinode positions
+    def find_antinodes_resonant_harmonics(pair):
+        row1, col1 = pair[0]
+        row2, col2 = pair[1]
+
+        drow = row2 - row1
+        dcol = col2 - col1
+
+        points = []
+        # Points before pair[0]
+        curr_row, curr_col = row1 - drow, col1 - dcol
+        while 0 <= curr_row < rows and 0 <= curr_col < cols:
+            points.append((curr_row, curr_col))
+            curr_row -= drow
+            curr_col -= dcol
+
+        # Point after pair[1]
+        curr_row, curr_col = row2 + drow, col2 + dcol
+        while 0 <= curr_row < rows and 0 <= curr_col < cols:
+            points.append((curr_row, curr_col))
+            curr_row += drow
+            curr_col += dcol
+
+        return points
+
+    all_antinodes = set()
+    for pairs in all_pairs.values():
+        for pair in pairs:
+            points = find_antinodes_resonant_harmonics(pair)
+            all_antinodes.update(
+                point
+                for point in points
+                if data_dict[point] != "!"
+                and 0 <= point[0] < rows
+                and 0 <= point[1] < cols
+            )
+
+    return all_antinodes
 
 
 @timeit
 def part2():
-    pass
+    # Rewrite later. no time rn :-(
+    all_antinodes = find_antinodes_pt2()
+    original_antennas = set()
+    for coords in frequency_dict.values():
+        original_antennas.update(coords)
+
+    return len(list(all_antinodes.union(original_antennas)))
 
 
-part2()
+print(part2())
