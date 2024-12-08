@@ -44,41 +44,43 @@ def find_frequencies():
 frequency_dict = find_frequencies()
 
 
-def find_antinodes(pair):
+def find_antinodes(pair, resonant_harmonics=True):
     row1, col1 = pair[0]
     row2, col2 = pair[1]
-
     drow = row2 - row1
     dcol = col2 - col1
 
-    # Point before pair[0]
-    point_before = (row1 - drow, col1 - dcol)
-
-    # Point after pair[1]
-    point_after = (row2 + drow, col2 + dcol)
-
-    return [point_before, point_after]
-
-
-def find_antinodes_resonant_harmonics(pair):
-    row1, col1 = pair[0]
-    row2, col2 = pair[1]
-
-    drow = row2 - row1
-    dcol = col2 - col1
+    conditions = {
+        # Not solving for resonant harmonics
+        # Just find next points before and after
+        False: {
+            "valid_point": lambda row, col: True,  # Always valid
+            "get_next": lambda row, col: False,  # Stop after one point
+        },
+        # Find all points within the grid along the line
+        True: {
+            "valid_point": lambda row, col: 0 <= row < rows and 0 <= col < cols,
+            "get_next": lambda row, col: True,  # Keep going if valid
+        },
+    }
 
     points = []
+
     # Points before pair[0]
     curr_row, curr_col = row1 - drow, col1 - dcol
-    while 0 <= curr_row < rows and 0 <= curr_col < cols:
+    while conditions[resonant_harmonics]["valid_point"](curr_row, curr_col):
         points.append((curr_row, curr_col))
+        if not conditions[resonant_harmonics]["get_next"](curr_row, curr_col):
+            break
         curr_row -= drow
         curr_col -= dcol
 
-    # Point after pair[1]
+    # Points after pair[1]
     curr_row, curr_col = row2 + drow, col2 + dcol
-    while 0 <= curr_row < rows and 0 <= curr_col < cols:
+    while conditions[resonant_harmonics]["valid_point"](curr_row, curr_col):
         points.append((curr_row, curr_col))
+        if not conditions[resonant_harmonics]["get_next"](curr_row, curr_col):
+            break
         curr_row += drow
         curr_col += dcol
 
@@ -87,25 +89,21 @@ def find_antinodes_resonant_harmonics(pair):
 
 ## Part 1
 def find_all_antinodes(resonant_harmonics=True):
-    # Now includes resonant harmonics lol
+    # For each frequency, find all locations
     frequency_dict = find_frequencies()
 
-    # First find all pairs for each frequency
+    # Find all pairs of locations for each frequency
     all_pairs = {
         frequency_key: list(combinations(coords, 2))
         for frequency_key, coords in frequency_dict.items()
     }
 
-    # For each pair in frequency find possible antinode positions
+    # For each pair of locations in frequency find possible antinode positions
     all_antinodes = set()
     # Now add the resonant harmonics
     for pairs in all_pairs.values():
         for pair in pairs:
-            points = (
-                find_antinodes_resonant_harmonics(pair)
-                if resonant_harmonics
-                else find_antinodes(pair)
-            )
+            points = find_antinodes(pair, resonant_harmonics)
             all_antinodes.update(
                 point
                 for point in points
