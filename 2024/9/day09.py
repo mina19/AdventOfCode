@@ -22,7 +22,8 @@ def compute_checksum(diskmap_table):
     # Example block: 009981118882777333...
     # Represented in diskmap_table_copy like this:
     # # [(2, 0), (2, 9), (1, 8), (3, 1), (3, 8), (1, 2), (3, 7), (3, 3), ...]
-    # 0 * 0 = 0, 1 * 0 = 0, 2 * 9 = 18, 3 * 9 = 27, 4 * 8 = 32
+    # 0 * 0 = 0, 1 * 0 = 0, 2 * 9 = 18, 3 * 9 = 27, 4 * 8 = 32, ...
+    # checksum is the sum of these: 0 + 0 + 18 + 27 + 32 + ...
     checksum = 0
     block_idx = 0
     for diskmap_tuple in diskmap_table:
