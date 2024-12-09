@@ -41,16 +41,16 @@ def part1():
         gap_length, gap_id = gap_tuple  # gap_id is always -1 by definition of a gap
         file_length, file_id = file_tuple
 
-        if file_tuple[0] > gap_tuple[0]:  # If file is bigger than gap
+        if file_length > gap_length:
             diskmap_table[gap_index] = (gap_length, file_id)
             diskmap_table[file_index] = (file_length - gap_length, file_id)
             diskmap_table.insert(file_index + 1, (gap_length, gap_id))
-        elif file_tuple[0] == gap_length:  # If file and gap are same size
+        elif file_length == gap_length:
             diskmap_table[gap_index] = (gap_length, file_id)
-            diskmap_table[file_index] = (gap_length, gap_id)
-        else:  # If gap is bigger than file
             diskmap_table[file_index] = (file_length, gap_id)
+        else:
             diskmap_table[gap_index] = (file_length, file_id)
+            diskmap_table[file_index] = (file_length, gap_id)
             diskmap_table.insert(gap_index + 1, (gap_length - file_length, gap_id))
         # print([el[1] for el in diskmap_table])
 
