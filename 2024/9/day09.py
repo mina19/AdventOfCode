@@ -1,5 +1,4 @@
 ## Pull Data
-import math
 from pathlib import Path
 
 from get_data import save_data, timeit
@@ -92,7 +91,7 @@ def part1():
     return compute_checksum(diskmap_table)
 
 
-print(part1())
+# print(part1())
 
 # We altered the diskmap table in part 1, so we need to reset it
 diskmap_table = [(int(num), i // 2 if i % 2 == 0 else -1) for i, num in enumerate(data)]
@@ -101,17 +100,23 @@ diskmap_table = [(int(num), i // 2 if i % 2 == 0 else -1) for i, num in enumerat
 ## Part 2
 @timeit
 def part2():
+    # Iterates through files from middle to start
+    # For each file, finds a gap earlier in the table that's large enough
+    # If found, moves the file to that gap
+    # If the gap is larger than needed, splits it into used and remaining space
+    # Merges adjacent gaps
+    # Repeats until no more moves are possible
+
     stop = False
     while not stop:
         stop = True
-        for id in range(math.ceil(len(data) / 2) - 1, -1, -1):
+        # Length of original data will not change but length of diskmap_table will
+        for id in range(len(data) // 2, -1, -1):
             # Find the next file
             table_file_index = -1
-            for i in range(0, len(diskmap_table)):
-                diskmap_tuple = diskmap_table[i]
+            for i, diskmap_tuple in enumerate(diskmap_table):
                 if diskmap_tuple[1] == id:
                     table_file_index = i
-                    # break
             if table_file_index == -1:
                 continue
             file_length, file_id = diskmap_table[table_file_index]
@@ -130,6 +135,7 @@ def part2():
             ]  # gap_id is always -1 by definition of a gap
             stop = False
 
+            # Rearrange the diskmap_table
             if file_length == gap_length:
                 # Swap the file and the gap
                 diskmap_table[table_gap_index] = (file_length, file_id)
@@ -146,9 +152,11 @@ def part2():
 
             i = 0
             while i < len(diskmap_table) - 1:
-                if diskmap_table[i][1] == -1 and diskmap_table[i + 1][1] == -1:
+                diskmap_tuple = diskmap_table[i]
+                next_diskmap_tuple = diskmap_table[i + 1]
+                if diskmap_tuple[1] == -1 and next_diskmap_tuple[1] == -1:
                     diskmap_table[i] = (
-                        diskmap_table[i][0] + diskmap_table[i + 1][0],
+                        diskmap_tuple[0] + next_diskmap_tuple[0],
                         -1,
                     )
                     del diskmap_table[i + 1]
