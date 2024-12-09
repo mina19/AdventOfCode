@@ -100,7 +100,7 @@ print(part1())
 ## Part 2
 @timeit
 def part2():
-    # Iterates through files from middle to start
+    # Iterates through file IDs backwards
     # For each file, finds a gap earlier in the table that's large enough
     # If found, moves the file to that gap
     # If the gap is larger than needed, split it into used and remaining gap
@@ -118,7 +118,7 @@ def part2():
             for i, diskmap_tuple in enumerate(diskmap_table_copy):
                 # Check if the file ID is the one we're looking for
                 if diskmap_tuple[1] == idx:
-                    # print(f"File {idx} found at index {i}")
+                    # print(f"File {idx} found at table_file_index {i}")
                     table_file_index = i
             if table_file_index == -1:
                 continue
