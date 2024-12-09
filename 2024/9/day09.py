@@ -103,7 +103,7 @@ def part2():
     # Iterates through files from middle to start
     # For each file, finds a gap earlier in the table that's large enough
     # If found, moves the file to that gap
-    # If the gap is larger than needed, splits it into used and remaining space
+    # If the gap is larger than needed, splits it into used and remaining gap
     # Merges adjacent gaps
     # Repeats until no more moves are possible
 
@@ -154,6 +154,7 @@ def part2():
             while i < len(diskmap_table) - 1:
                 diskmap_tuple = diskmap_table[i]
                 next_diskmap_tuple = diskmap_table[i + 1]
+                # Merge adjacent gaps
                 if diskmap_tuple[1] == -1 and next_diskmap_tuple[1] == -1:
                     diskmap_table[i] = (
                         diskmap_tuple[0] + next_diskmap_tuple[0],
