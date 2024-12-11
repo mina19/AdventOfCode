@@ -10,7 +10,9 @@ data = Path(f"2024/{day}/day{day:02d}_sample.txt").read_text().splitlines()
 
 data_dict = defaultdict(
     lambda: defaultdict(lambda: "!"),
-    enumerate(defaultdict((lambda: "!"), enumerate(line)) for line in data),
+    enumerate(
+        defaultdict((lambda: "!"), enumerate(int(i) for i in line)) for line in data
+    ),
 )
 
 rows = len(data)
@@ -23,7 +25,7 @@ def trailhead_count(distinct=False):
     result = 0
     for row in range(rows):
         for col in range(cols):
-            if data_dict[row][col] == "0":
+            if data_dict[row][col] == 0:
                 # States will track the current positions starting from 0
                 states = deque()
                 states.append((row, col))
@@ -32,22 +34,22 @@ def trailhead_count(distinct=False):
                     visited = set()
                 while states:
                     current_row, current_col = states.popleft()
-                    current_val = int(data_dict[current_row][current_col])
                     if not distinct:  # Part 1
                         if (current_row, current_col) in visited:
                             continue
                         # Haven't seen this position before
                         visited.add((current_row, current_col))
 
-                    if data_dict[current_row][current_col] == "9":
+                    if data_dict[current_row][current_col] == 9:
                         # Reached a position of 9-height
                         result += 1
 
                     elif data_dict[current_row][current_col] != "!":
                         for drow, dcol in directions:
                             # Check if next position is valid
-                            if data_dict[current_row + drow][current_col + dcol] == str(
-                                1 + current_val
+                            if (
+                                data_dict[current_row + drow][current_col + dcol]
+                                == 1 + data_dict[current_row][current_col]
                             ):
                                 states.append((current_row + drow, current_col + dcol))
 
