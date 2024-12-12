@@ -68,7 +68,7 @@ def part2(n):
         stones = new_stones
 
     # Sum up count values
-    return sum(new_stones.values())
+    return stones.total()
 
 
 print(part2(75))
