@@ -6,7 +6,7 @@ from get_data import save_data, timeit
 
 save_data(2024, day := 11)
 data = Path(f"2024/{day}/day{day:02d}.txt").read_text().splitlines()
-data = Path(f"2024/{day}/day{day:02d}_sample.txt").read_text().splitlines()
+# data = Path(f"2024/{day}/day{day:02d}_sample.txt").read_text().splitlines()
 
 
 ## Part 1
@@ -18,7 +18,7 @@ def part1(n):
     # [512, 72, 2024, 2, 0, 2, 4, 2867, 6032]
     # [1036288, 7, 2, 20, 24, 4048, 1, 4048, 8096, 28, 67, 60, 32]
     stones = [int(num) for num in data[0].split()]
-    for i in range(n):
+    for _ in range(n):
         # Create a new list with all stones, including duplicates
         # Probably won't scale...
         new_stones = []
@@ -51,7 +51,7 @@ def part2(n):
     stones = [int(num) for num in data[0].split()]
     stones = Counter(stones)
 
-    for i in range(n):
+    for _ in range(n):
         # Only store unique values with their counts
         # Should scale
         new_stones = Counter()
@@ -67,12 +67,8 @@ def part2(n):
                 new_stones[stone * 2024] += stone_count
         stones = new_stones
 
-    # Count up values in most common
-    result = 0
-    for stone, stone_count in new_stones.most_common():
-        result += stone_count
-
-    return result
+    # Sum up count values
+    return sum(new_stones.values())
 
 
 print(part2(75))
