@@ -30,7 +30,7 @@ def trailhead_count(distinct=False):
                 states = deque()
                 states.append((row, col))
 
-                if not distinct:  # Part 1s
+                if not distinct:  # Part 1
                     visited = set()
                 while states:
                     current_row, current_col = states.popleft()

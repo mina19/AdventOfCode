@@ -28,8 +28,8 @@ def part1(n):
             if stone == 0:
                 new_stones.append(1)
             elif stone_length % 2 == 0:
-                new_stones.append(int(stone_string[: (stone_length // 2)]))
-                new_stones.append(int(stone_string[(stone_length // 2) :]))
+                new_stones.append(int(stone_string[: stone_length // 2]))
+                new_stones.append(int(stone_string[stone_length // 2 :]))
             else:
                 new_stones.append(stone * 2024)
         stones = new_stones
@@ -61,8 +61,8 @@ def part2(n):
             if stone == 0:
                 new_stones[1] += stone_count
             elif stone_length % 2 == 0:
-                new_stones[int(stone_string[: (stone_length // 2)])] += stone_count
-                new_stones[int(stone_string[(stone_length // 2) :])] += stone_count
+                new_stones[int(stone_string[: stone_length // 2])] += stone_count
+                new_stones[int(stone_string[stone_length // 2 :])] += stone_count
             else:
                 new_stones[stone * 2024] += stone_count
         stones = new_stones
