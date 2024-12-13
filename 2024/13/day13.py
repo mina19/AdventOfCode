@@ -71,8 +71,8 @@ def solve(part2=False):
         b_x, b_y = find_combo(claw[1])
         prize_x, prize_y = find_combo(claw[2])
         if part2:
-            prize_x += 10000000000000
-            prize_y += 10000000000000
+            prize_x += 10_000_000_000_000
+            prize_y += 10_000_000_000_000
 
         # Matrix solution
         sol_x = (b_y * prize_x - b_x * prize_y) / (a_x * b_y - b_x * a_y)
