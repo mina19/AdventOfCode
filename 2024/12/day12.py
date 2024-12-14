@@ -46,7 +46,7 @@ def determine_new_region(start_row, start_col, region_number):
                 # Since the character is different, this is a boundary
                 # and we need to increment perimeter
                 perimeter += 1
-    return perimeter, area
+    return perimeter * area
 
 
 ## Part 1
@@ -58,8 +58,7 @@ def part1():
     for row in range(rows):
         for col in range(cols):
             if region[row][col] == -1:  # Unvisited so find new region
-                perimeter, area = determine_new_region(row, col, region_number)
-                result += perimeter * area
+                result += determine_new_region(row, col, region_number)
                 region_number += 1
 
     return result
