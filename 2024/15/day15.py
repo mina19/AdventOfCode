@@ -8,17 +8,41 @@ save_data(2024, day := 15)
 data = Path(f"2024/{day}/day{day:02d}.txt").read_text()
 data = Path(f"2024/{day}/day{day:02d}_sample.txt").read_text()
 
-# Get the warehouse map and the movements
-warehouse_map = data.split("\n\n")[0].splitlines()
+# Get the robot movements
 movements = data.split("\n\n")[1].replace("\n", "")
 
-rows = len(warehouse_map)
-cols = len(warehouse_map[0])
-
+# Warehouse maps for part 1 and part 2
+warehouse_map = data.split("\n\n")[0].splitlines()
 warehouse_map_dict = defaultdict(
     lambda: defaultdict(lambda: "!"),
     enumerate(defaultdict((lambda: "!"), enumerate(line)) for line in warehouse_map),
 )
+rows = len(warehouse_map)
+cols = len(warehouse_map[0])
+
+
+# Expand the map
+def expand_map(char):
+    if char == "O":
+        return "[]"
+    elif char == "@":
+        return "@."
+    else:
+        return char + char
+
+
+warehouse_map_part2 = [
+    "".join(expand_map(char) for char in line) for line in warehouse_map
+]
+warehouse_map_part2_dict = defaultdict(
+    lambda: defaultdict(lambda: "!"),
+    enumerate(
+        defaultdict((lambda: "!"), enumerate(line)) for line in warehouse_map_part2
+    ),
+)
+rows_part2 = len(warehouse_map_part2)
+cols_part2 = len(warehouse_map_part2[0])
+
 directions = [(0, 1), (0, -1), (-1, 0), (1, 0)]
 characters = [">", "<", "^", "v"]
 character_direction_dict = dict(zip(characters, directions))
