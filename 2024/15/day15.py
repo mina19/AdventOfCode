@@ -98,7 +98,23 @@ print(part1())
 ## Part 2
 @timeit
 def part2():
-    pass
+    # Find robot starting position
+    robot_row, robot_col = 0, 0
+    for row in range(rows_part2):
+        for col in range(cols_part2):
+            if warehouse_map_part2_dict[row][col] == "@":
+                robot_row, robot_col = row, col
+
+    # Begin movements
+    for movement in movements:
+        drow, dcol = character_direction_dict[movement]
+        # Need to code how the robot checks valid moves and moves
+        pass
+
+    # Sum of GPS coordinates
+    # For these larger boxes, distances are measured from the edge
+    # of the map to the closest edge of the box in question.
+    return
 
 
-part2()
+print(part2())
