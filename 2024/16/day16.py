@@ -86,6 +86,7 @@ def part1_heap():
     return score
 
 
+@timeit
 def part1_part2_bfs():
     # Find start and end positions
     for row in range(rows):
