@@ -17,7 +17,14 @@ data_dict = defaultdict(
 rows = len(data)
 cols = len(data[0])
 
-directions = [(0, 1), (-1, 0), (0, -1), (1, 0)]
+directions = [(0, 1), (-1, 0), (0, -1), (1, 0)]  # right, up, left, down
+
+
+# Helper function
+def rotate_direction(current_direction_index, turn_type):
+    if turn_type == "left":
+        return (current_direction_index + 1) % 4
+    return (current_direction_index - 1) % 4
 
 
 ## Part 1
@@ -35,12 +42,14 @@ def part1():
     visited = set()
     score = 0
     while priority_queue:
-        current_score, (current_position, current_direction) = heappop(priority_queue)
-        if (current_position, current_direction) in visited:
+        current_score, (current_position, current_direction_index) = heappop(
+            priority_queue
+        )
+        if (current_position, current_direction_index) in visited:
             continue
 
         # Keep track of current position and current direction
-        visited.add((current_position, current_direction))
+        visited.add((current_position, current_direction_index))
 
         if data_dict[current_position[0]][current_position[1]] == "#":
             continue
@@ -49,7 +58,7 @@ def part1():
             break
 
         # Move forward in current facing direction
-        drow, dcol = directions[current_direction]
+        drow, dcol = directions[current_direction_index]
         heappush(
             priority_queue,
             (
@@ -59,17 +68,18 @@ def part1():
                         current_position[0] + drow,
                         current_position[1] + dcol,
                     ),
-                    current_direction,
+                    current_direction_index,
                 ),
             ),
         )
 
         # Reindeer can also rotate clockwise or counterclockwise 90 degrees
         # at a time (increasing their score by 1000 points).
-        for delta in [-1, 1]:
-            new_index = (current_direction + delta + len(directions)) % len(directions)
+        for turn_type in ["right", "left"]:
+            new_direction_index = rotate_direction(current_direction_index, turn_type)
             heappush(
-                priority_queue, (current_score + 1000, (current_position, new_index))
+                priority_queue,
+                (current_score + 1000, (current_position, new_direction_index)),
             )
 
     return score
