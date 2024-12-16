@@ -86,8 +86,7 @@ def part1_heap():
     return score
 
 
-@timeit
-def solve_bfs():
+def part1_part2_bfs():
     # Find start and end positions
     for row in range(rows):
         for col in range(cols):
@@ -97,45 +96,44 @@ def solve_bfs():
                 end_position = (row, col)
 
     queue = deque([(0, (start_position, 0), [start_position])])
-    visited = {}  # Track state:score instead of just states
-    paths = []  # Store successful paths
-    scores = []
+    visited = {}  # Track score too instead of just states so we can do score comparison
+    best_paths = []  # For Part 2
+    best_score = float("inf")
     while queue:
         current_score, (current_position, current_direction_index), current_path = (
             queue.popleft()
         )
 
-        state = (current_position, current_direction_index)
-        # Only skip if we've seen this state with a better score
-        if state in visited and visited[state] <= current_score:
+        # Skip if score is already worse than best
+        if current_score > best_score:
             continue
 
-        # Keep track of current position and current direction
-        visited[state] = current_score
+        current_state = (current_position, current_direction_index)
+        # Allow equal score paths to be explored
+        if current_state in visited and visited[current_state] < current_score:
+            continue
+
+        visited[current_state] = current_score
 
         if data_dict[current_position[0]][current_position[1]] == "#":
             continue
+
         if current_position == end_position:
-            scores.append(current_score)
-            paths.append(current_path)  # Save successful path
+            if current_score <= best_score:
+                if current_score < best_score:
+                    best_paths = []  # Clear all previous paths since they're not optimal
+                best_score = current_score  # Update best score
+                best_paths.append(current_path)  # Add this path
             continue
 
         # Move forward in current facing direction
         drow, dcol = directions[current_direction_index]
         new_pos = (current_position[0] + drow, current_position[1] + dcol)
-        # Check boundaries before adding new position
+
         if 0 <= new_pos[0] < rows and 0 <= new_pos[1] < cols:
-            # Add new_pos to path history
             new_path = current_path + [new_pos]
             queue.append(
-                (
-                    current_score + 1,
-                    (
-                        new_pos,
-                        current_direction_index,
-                    ),
-                    new_path,
-                ),
+                (current_score + 1, (new_pos, current_direction_index), new_path)
             )
 
         # Reindeer can also rotate clockwise or counterclockwise 90 degrees
@@ -147,14 +145,24 @@ def solve_bfs():
                     current_score + 1000,
                     (current_position, new_direction_index),
                     current_path,
-                ),
+                )
             )
 
-    # Which tiles are part of any best path through the maze
-    min_score = min(scores)
-    tile_count = len(list(chain(*paths))) - (len(paths) - 1) * 2
+    # Get all unique tiles that are part of any best path
+    all_tiles = set()
+    for path in best_paths:
+        all_tiles.update(path)
 
-    return min_score, tile_count
+    # # Debug print for Part 2
+    # for row in range(rows):
+    #     for col in range(cols):
+    #         if (row, col) in all_tiles:
+    #             print("O", end="")
+    #         else:
+    #             print(data_dict[row][col], end="")
+    #     print()
+
+    return best_score, len(all_tiles)
 
 
 print(part1_heap())
@@ -162,5 +170,4 @@ print(part1_heap())
 ## Part 2
 # Heap solution will not work for this part. Need to track all the unique paths that give same best score.
 # Use BFS solution
-
-print(solve_bfs())
+print(part1_part2_bfs())
