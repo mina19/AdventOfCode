@@ -2,6 +2,7 @@
 from pathlib import Path
 from collections import defaultdict, deque
 from heapq import heappush, heappop
+from itertools import chain
 
 from get_data import save_data, timeit
 
@@ -86,7 +87,7 @@ def part1_heap():
 
 
 @timeit
-def part1_deque():
+def solve_bfs():
     # Find start and end positions
     for row in range(rows):
         for col in range(cols):
@@ -95,11 +96,14 @@ def part1_deque():
             elif data_dict[row][col] == "E":
                 end_position = (row, col)
 
-    queue = deque([(0, (start_position, 0))])
+    queue = deque([(0, (start_position, 0), [start_position])])
     visited = {}  # Track state:score instead of just states
+    paths = []  # Store successful paths
     scores = []
     while queue:
-        current_score, (current_position, current_direction_index) = queue.popleft()
+        current_score, (current_position, current_direction_index), current_path = (
+            queue.popleft()
+        )
 
         state = (current_position, current_direction_index)
         # Only skip if we've seen this state with a better score
@@ -113,6 +117,7 @@ def part1_deque():
             continue
         if current_position == end_position:
             scores.append(current_score)
+            paths.append(current_path)  # Save successful path
             continue
 
         # Move forward in current facing direction
@@ -120,6 +125,8 @@ def part1_deque():
         new_pos = (current_position[0] + drow, current_position[1] + dcol)
         # Check boundaries before adding new position
         if 0 <= new_pos[0] < rows and 0 <= new_pos[1] < cols:
+            # Add new_pos to path history
+            new_path = current_path + [new_pos]
             queue.append(
                 (
                     current_score + 1,
@@ -127,6 +134,7 @@ def part1_deque():
                         new_pos,
                         current_direction_index,
                     ),
+                    new_path,
                 ),
             )
 
@@ -135,20 +143,24 @@ def part1_deque():
         for turn_type in ["right", "left"]:
             new_direction_index = rotate_direction(current_direction_index, turn_type)
             queue.append(
-                (current_score + 1000, (current_position, new_direction_index)),
+                (
+                    current_score + 1000,
+                    (current_position, new_direction_index),
+                    current_path,
+                ),
             )
 
-    return min(scores)
+    # Which tiles are part of any best path through the maze
+    min_score = min(scores)
+    tile_count = len(list(chain(*paths))) - (len(paths) - 1) * 2
+
+    return min_score, tile_count
 
 
 print(part1_heap())
-print(part1_deque())
-
 
 ## Part 2
-@timeit
-def part2():
-    pass
+# Heap solution will not work for this part. Need to track all the unique paths that give same best score.
+# Use BFS solution
 
-
-part2()
+print(solve_bfs())
