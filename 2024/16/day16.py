@@ -110,6 +110,7 @@ def part1_part2_bfs():
 
         current_state = (current_position, current_direction_index)
         # Allow equal score paths to be explored
+        # First time we see a state might not be its best score
         if current_state in visited and visited[current_state] < current_score:
             continue
 
@@ -149,9 +150,7 @@ def part1_part2_bfs():
             )
 
     # Get all unique tiles that are part of any best path
-    all_tiles = set()
-    for path in best_paths:
-        all_tiles.update(path)
+    all_tiles = set(chain(*best_paths))
 
     # # Debug print for Part 2
     # for row in range(rows):
