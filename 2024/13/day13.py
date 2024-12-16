@@ -30,12 +30,12 @@ def part1_heap():
         prize_x, prize_y = find_combo(claw[2])
 
         # Track positions to visit using priority queue
-        heap = [(0, 0, 0)]  # (token cost, x, y)
+        priority_queue = [(0, 0, 0)]  # (token cost, x, y)
         visited = set()  # Track visited positions
 
-        while heap:
+        while priority_queue:
             # Pop the position with smallest cost
-            current_tokens, current_x, current_y = heappop(heap)
+            current_tokens, current_x, current_y = heappop(priority_queue)
 
             # Skip if we've already visited this position
             if (current_x, current_y) in visited:
@@ -52,8 +52,14 @@ def part1_heap():
             elif current_x <= prize_x and current_y <= prize_y:
                 # Add both possible moves to queue with their costs
                 # It costs 3 tokens to push the A button and 1 token to push the B button
-                heappush(heap, (current_tokens + 3, current_x + a_x, current_y + a_y))
-                heappush(heap, (current_tokens + 1, current_x + b_x, current_y + b_y))
+                heappush(
+                    priority_queue,
+                    (current_tokens + 3, current_x + a_x, current_y + a_y),
+                )
+                heappush(
+                    priority_queue,
+                    (current_tokens + 1, current_x + b_x, current_y + b_y),
+                )
 
     return tokens
 
