@@ -53,7 +53,7 @@ def part1(registers):
             # The numerator is the value in the A register.
             # The denominator is found by raising 2 to the power of the
             # instruction's combo operand.
-            registers["A"] = registers["A"] // 2**combo_operand
+            registers["A"] = registers["A"] // (1 << combo_operand)
         elif opcode == 1:
             # The bxl instruction (opcode 1) calculates the bitwise XOR
             # of register B and the instruction's literal operand,
@@ -86,12 +86,12 @@ def part1(registers):
             # The bdv instruction (opcode 6) works exactly like the adv
             # instruction except that the result is stored in the B register.
             # (The numerator is still read from the A register.)
-            registers["B"] = registers["A"] // 2**combo_operand
+            registers["B"] = registers["A"] // (1 << combo_operand)
         elif opcode == 7:
             # The cdv instruction (opcode 7) works exactly like the adv instruction
             # except that the result is stored in the C register.
             # (The numerator is still read from the A register.)
-            registers["C"] = registers["A"] // 2**combo_operand
+            registers["C"] = registers["A"] // (1 << combo_operand)
 
     # Join the values it output into a single string
     return ",".join(str(x) for x in outputs)
@@ -116,4 +116,4 @@ def part2():
     return register_a_value
 
 
-print(part2())
+# print(part2())
