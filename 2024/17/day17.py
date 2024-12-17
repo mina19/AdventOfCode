@@ -10,10 +10,10 @@ data = Path(f"2024/{day}/day{day:02d}.txt").read_text()
 
 register_pattern = "Register (.): (\d+)"
 
-registers = {}
+registers_original = {}
 for line in data.split("\n\n")[0].split("\n"):
     match = re.match(register_pattern, line)
-    registers[match[1]] = int(match[2])
+    registers_original[match[1]] = int(match[2])
 
 instructions = [
     int(num)
@@ -23,9 +23,10 @@ instructions = [
 
 ## Part 1
 @timeit
-def part1():
+def part1(registers):
     i = 0
     outputs = []
+    registers = registers.copy()
     while i < len(instructions) - 1:
         # Get the literal opcode and operand
         opcode = instructions[i]
@@ -96,13 +97,23 @@ def part1():
     return ",".join(str(x) for x in outputs)
 
 
-print(part1())
+print(part1(registers_original))
 
 
 ## Part 2
+# This is a brute force approach and will take a long time to run for large inputs
 @timeit
 def part2():
-    pass
+    desired_output = data.split("\n\n")[1].splitlines()[0].split("Program: ")[1]
+    register_a_value = 1
+    while True:
+        registers = registers_original.copy()
+        registers["A"] = register_a_value
+        program_output = part1(registers)
+        if program_output == desired_output:
+            break
+        register_a_value += 1
+    return register_a_value
 
 
-part2()
+print(part2())
