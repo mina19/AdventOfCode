@@ -63,13 +63,14 @@ print(part1())
 
 
 ## Part 2
-#  This is sub-optimal, but it works. Will improve later
+#  This is sub-optimal, but it works. Will improve
 @timeit
 def part2():
     for corruption_length in range(len(data)):
         if part1(corruption_length) == float("inf"):
             break
-        return data[corruption_length]
+
+    return data[corruption_length - 1]
 
 
 print(part2())
