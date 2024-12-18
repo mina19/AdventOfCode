@@ -16,18 +16,22 @@ corruption_length = 1024
 directions = [(0, 1), (0, -1), (-1, 0), (1, 0)]
 data_dict = defaultdict((lambda: defaultdict(lambda: ".")))
 
-corrupted_data = [
-    (int(x.split(",")[0]), int(x.split(",")[1])) for x in data[:corruption_length]
-]
-
-# Add corrupted data
-for row, col in corrupted_data:
-    data_dict[row][col] = "#"
-
 
 ## Part 1
 @timeit
-def part1():
+def part1(corruption_length=corruption_length):
+    def add_corrupted_data(corruption_length):
+        corrupted_data = [
+            (int(x.split(",")[0]), int(x.split(",")[1]))
+            for x in data[:corruption_length]
+        ]
+
+        # Add corrupted data
+        for row, col in corrupted_data:
+            data_dict[row][col] = "#"
+
+    add_corrupted_data(corruption_length)
+
     visited = set()
     q = deque()
     q.appendleft((0, 0, 0))  # Track cost, row, col
@@ -59,9 +63,13 @@ print(part1())
 
 
 ## Part 2
+#  This is sub-optimal, but it works. Will improve later
 @timeit
 def part2():
-    pass
+    for corruption_length in range(len(data)):
+        if part1(corruption_length) == float("inf"):
+            break
+        return data[corruption_length]
 
 
-part2()
+print(part2())
