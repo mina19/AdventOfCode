@@ -14,7 +14,7 @@ corruption_length = 1024
 # corruption_length = 12
 
 directions = [(0, 1), (0, -1), (-1, 0), (1, 0)]
-data_dict = defaultdict((lambda: defaultdict(lambda: ".")))
+grid = defaultdict((lambda: defaultdict(lambda: ".")))
 
 
 ## Part 1
@@ -28,7 +28,7 @@ def part1(corruption_length=corruption_length):
 
         # Add corrupted data
         for row, col in corrupted_data:
-            data_dict[row][col] = "#"
+            grid[row][col] = "#"
 
     add_corrupted_data(corruption_length)
 
@@ -43,13 +43,7 @@ def part1(corruption_length=corruption_length):
             continue
 
         visited.add((row, col))
-        if (
-            data_dict[row][col] == "#"
-            or row < 0
-            or row >= rows
-            or col < 0
-            or col >= cols
-        ):
+        if grid[row][col] == "#" or row < 0 or row >= rows or col < 0 or col >= cols:
             continue
         if row == rows - 1 and col == cols - 1:
             best_cost = min(cost, best_cost)
