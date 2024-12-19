@@ -98,13 +98,7 @@ def count_ways(pattern):
 ## Part 1
 @timeit
 def part1():
-    result = 0
-
-    for desired_pattern in desired_patterns:
-        if can_do_memo(desired_pattern, {}):
-            result += 1
-
-    return result
+    return sum(map(lambda pattern: can_do_memo(pattern, {}), desired_patterns))
 
 
 print(part1())
@@ -113,7 +107,6 @@ print(part1())
 ## Part 2
 @timeit
 def part2():
-    # return sum(count_ways_memo(pattern, {}) for pattern in desired_patterns)
     return sum(map(lambda pattern: count_ways_memo(pattern, {}), desired_patterns))
 
 
