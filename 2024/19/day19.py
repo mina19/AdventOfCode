@@ -48,6 +48,53 @@ def can_do(pattern):
     return False
 
 
+def count_ways_memo(pattern, memo):
+    """
+    brwrr -> candidate b  -> rwrr
+    rwrr  -> candidate r  -> wrr
+    wrr   -> candidate wr -> r
+    r     -> candidate r  -> ""
+
+    memo: {'r': 1}
+    memo: {'r': 1, 'wrr': 1}
+    memo: {'r': 1, 'wrr': 1, 'rwrr': 1}
+
+    brwrr -> candidate br  -> wrr # Already in memo!
+
+    memo: {'r': 1, 'wrr': 1, 'rwrr': 1, 'brwrr': 2}
+    """
+    # Initialize memo dict on first call
+    if memo is None:
+        memo = {}
+
+    # Return memoized result if available
+    if pattern in memo:
+        return memo[pattern]
+
+    if pattern == "":
+        return 1
+
+    ways = 0
+    for candidate in available_patterns:
+        if pattern.startswith(candidate):
+            ways += count_ways_memo(pattern[len(candidate) :], memo)
+
+    memo[pattern] = ways
+    return ways
+
+
+@cache
+def count_ways(pattern):
+    if pattern == "":
+        return 1
+
+    ways = 0
+    for candidate in available_patterns:
+        if pattern.startswith(candidate):
+            ways += count_ways(pattern[len(candidate) :])
+    return ways
+
+
 ## Part 1
 @timeit
 def part1():
@@ -66,7 +113,8 @@ print(part1())
 ## Part 2
 @timeit
 def part2():
-    pass
+    # return sum(count_ways_memo(pattern, {}) for pattern in desired_patterns)
+    return sum(map(lambda pattern: count_ways_memo(pattern, {}), desired_patterns))
 
 
-part2()
+print(part2())
