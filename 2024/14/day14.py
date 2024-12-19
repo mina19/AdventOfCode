@@ -1,7 +1,8 @@
 ## Pull Data
 from pathlib import Path
-
+import time
 from get_data import save_data, timeit
+from collections import deque
 import re
 
 save_data(2024, day := 14)
@@ -48,11 +49,60 @@ def part1(n):
 
 print(part1(100))
 
+# Re-tare positions
+robot_positions = [[int(match[2]), int(match[1])] for match in robot_data]
 
-## Part 2
+
+## Part 2 6620
 @timeit
 def part2():
-    pass
+    directions = [(0, 1), (0, -1), (-1, 0), (1, 0)]
+
+    def search_for_cluster(start_row, start_col, grid):
+        visited = set()
+        q = deque()
+        q.appendleft((start_row, start_col))
+        area = 0
+
+        while q:
+            row, col = q.pop()
+            if (row, col) in visited:
+                continue
+            visited.add((row, col))
+            area += 1
+            for drow, dcol in directions:
+                new_row = row + drow
+                new_col = col + dcol
+                if (
+                    0 <= new_row < rows
+                    and 0 <= new_col < cols
+                    and grid[new_row][new_col] == "#"
+                ):
+                    q.appendleft((new_row, new_col))
+        return area
+
+    i = 0
+    keep_searching = True
+    while keep_searching:
+        grid = [["." for col in range(cols)] for row in range(rows)]
+
+        for robot_position, robot_velocity in zip(robot_positions, robot_velocities):
+            robot_position[0] = (robot_position[0] + robot_velocity[0] + rows) % rows
+            robot_position[1] = (robot_position[1] + robot_velocity[1] + cols) % cols
+            grid[robot_position[0]][robot_position[1]] = "#"
+
+        max_cluster = max(
+            search_for_cluster(robot_position[0], robot_position[1], grid)
+            for robot_position in robot_positions
+        )
+        i += 1
+        if max_cluster >= 15:
+            # Check visual
+            for line in grid:
+                print("".join(line))
+            keep_searching = False
+
+    return i
 
 
-part2()
+print(part2())
