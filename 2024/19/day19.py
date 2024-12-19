@@ -126,7 +126,9 @@ print(part1())
 ## Part 2
 @timeit
 def part2():
-    return sum(map(lambda pattern: pattern_solver(pattern, "count"), desired_patterns))
+    return sum(
+        map(lambda pattern: pattern_solver(pattern, "count_ways"), desired_patterns)
+    )
 
 
 print(part2())
