@@ -95,10 +95,29 @@ def count_ways(pattern):
     return ways
 
 
+@cache
+def pattern_solver(pattern, mode="can_do"):
+    if pattern == "":
+        return True if mode == "can_do" else 1
+
+    if mode == "can_do":
+        for candidate in available_patterns:
+            if pattern.startswith(candidate):
+                if pattern_solver(pattern[len(candidate) :], mode="can_do"):
+                    return True
+        return False
+    else:  # count_ways mode
+        ways = 0
+        for candidate in available_patterns:
+            if pattern.startswith(candidate):
+                ways += pattern_solver(pattern[len(candidate) :], mode="count_ways")
+        return ways
+
+
 ## Part 1
 @timeit
 def part1():
-    return sum(map(lambda pattern: can_do_memo(pattern, {}), desired_patterns))
+    return sum(map(lambda pattern: pattern_solver(pattern, "can_do"), desired_patterns))
 
 
 print(part1())
@@ -107,7 +126,7 @@ print(part1())
 ## Part 2
 @timeit
 def part2():
-    return sum(map(lambda pattern: count_ways_memo(pattern, {}), desired_patterns))
+    return sum(map(lambda pattern: pattern_solver(pattern, "count"), desired_patterns))
 
 
 print(part2())
