@@ -1,6 +1,7 @@
 ## Pull Data
 from collections import defaultdict, deque
 from pathlib import Path
+from heapq import heappop, heappush
 
 from get_data import save_data, timeit
 
@@ -53,7 +54,43 @@ def part1(corruption_length=corruption_length):
     return best_cost
 
 
+@timeit
+def part1_heap(corruption_length=corruption_length):
+    def add_corrupted_data(corruption_length):
+        corrupted_data = [
+            (int(x.split(",")[0]), int(x.split(",")[1]))
+            for x in data[:corruption_length]
+        ]
+
+        # Add corrupted data
+        for row, col in corrupted_data:
+            grid[row][col] = "#"
+
+    add_corrupted_data(corruption_length)
+
+    priority_queue = [(0, 0, 0)]  # Track cost, row, col
+    visited = set()
+    best_cost = float("inf")
+
+    while priority_queue:
+        cost, row, col = heappop(priority_queue)
+        if (row, col) in visited:
+            continue
+
+        visited.add((row, col))
+        if grid[row][col] == "#" or row < 0 or row >= rows or col < 0 or col >= cols:
+            continue
+        if row == rows - 1 and col == cols - 1:
+            best_cost = min(cost, best_cost)
+        for drow, dcol in directions:
+            heappush(priority_queue, (cost + 1, row + drow, col + dcol))
+
+    return best_cost
+
+
 print(part1())
+
+print(part1_heap())
 
 
 ## Part 2
