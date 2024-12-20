@@ -48,7 +48,7 @@ def part1(registers):
         }
         if 3 < operand < 7:
             combo_operand = registers[combo_dict[operand]]
-        print(opcode, operand, combo_operand)
+
         if opcode == 0:
             # The adv instruction (opcode 0) performs division.
             # The numerator is the value in the A register.
@@ -79,7 +79,6 @@ def part1(registers):
             # (For legacy reasons, this instruction reads an operand but ignores it.)
             registers["B"] = registers["B"] ^ registers["C"]
         elif opcode == 5:
-            print("HERE!!!", combo_operand % 8, registers["A"])
             # The out instruction (opcode 5) calculates the value of its
             # combo operand modulo 8, then outputs that value.
             # (If a program outputs multiple values, they are separated by commas.)
@@ -119,26 +118,34 @@ instructions = [
 # and modify the iterated steps for how a, b, c change.
 @timeit
 def part2():
+    # Initialize bit vectors
     A = BitVec("A", 64)
-    B = BitVecVal(0, 64)
-    C = BitVecVal(0, 64)
+    b = BitVecVal(0, 64)
+    c = BitVecVal(0, 64)
+
+    # Setup solver
     solver = Optimize()
-
     a = A
-    b = B
-    c = C
 
+    # Process each instruction
     for i in range(len(instructions)):
-        b = a % 8  # opcode 2, operand 4
-        b = b ^ 1  # opcode 1, operand 1
-        c = LShR(a, b)  # c = a // (1 << b)  # opcode 7, operand 5
-        b = b ^ c  # opcode 4, operand 7
-        b = b ^ 4  # opcode 1, operand 4
-        a = LShR(a, 3)  # a = a // (1 << 3)  # opcode 0, operand 3
-
+        # Sequence of bit operations
+        b = a % 8  # opcode 2, operand 4 (get lowest 3 bits)
+        b = b ^ 1  # opcode 1, operand 1 (XOR with 1)
+        c = LShR(
+            a, b
+        )  # c = a // (1 << b) # opcode 7, operand 5 (logical shift right by b)
+        b = b ^ c  # opcode 4, operand 7 (XOR with shifted value)
+        b = b ^ 4  # opcode 1, operand 4 (XOR with 4)
+        a = LShR(
+            a, 3
+        )  # a = a // (1 << 3) # opcode 0, operand 3 (logical shift right by 3)
         solver.add(b % 8 == instructions[i])  # opcode 5, operand 5 (the output)
 
+    # Find minimum value of A that satisfies constraints
     solver.minimize(A)
+
+    # Return result if found
     if solver.check().r == 1:
         model = solver.model()
         return model[A].as_long()
