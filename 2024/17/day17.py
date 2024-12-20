@@ -125,7 +125,7 @@ def part2():
 
     # Setup solver
     solver = Optimize()
-    a = A
+    a = A  # This is necessary - can't modify A directly
 
     # Process each instruction
     for i in range(len(instructions)):
