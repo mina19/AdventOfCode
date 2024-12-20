@@ -18,6 +18,35 @@ data_dict = defaultdict(
 )
 directions = [(0, 1), (0, -1), (-1, 0), (1, 0)]
 
+for row in range(rows):
+    for col in range(cols):
+        if data_dict[row][col] == "S":
+            start_row, start_col = row, col
+        elif data_dict[row][col] == "E":
+            end_row, end_col = row, col
+
+
+# Helper functions
+# Needed for Part 2
+def get_grid_times(target_row, target_col, grid_times: dict = None):
+    if grid_times is None:
+        grid_times = {}
+
+    q = deque()
+    q.append((0, target_row, target_col))
+
+    while q:
+        time, row, col = q.popleft()
+        if (row, col) in grid_times:
+            continue
+
+        if data_dict[row][col] not in {"#", "!"}:
+            grid_times[(row, col)] = time
+            for drow, dcol in directions:
+                q.append((time + 1, row + drow, col + dcol))
+
+    return grid_times
+
 
 @cache
 def search_nocheat(start_row, start_col, target_row, target_col):
@@ -46,13 +75,6 @@ def search_nocheat(start_row, start_col, target_row, target_col):
 ## Part 1
 @timeit
 def part1():
-    for row in range(rows):
-        for col in range(cols):
-            if data_dict[row][col] == "S":
-                start_row, start_col = row, col
-            elif data_dict[row][col] == "E":
-                end_row, end_col = row, col
-
     nocheat_time = search_nocheat(start_row, start_col, end_row, end_col)
 
     result = 0
@@ -88,7 +110,15 @@ print(part1())
 ## Part 2
 @timeit
 def part2():
-    pass
+    times_from_start = get_grid_times(start_row, start_col)
+    times_to_end = get_grid_times(end_row, end_col)
+
+    nocheat_time = times_from_start[(end_row, end_col)]
+
+    result = 0
+    ### DO SOMETHING
+
+    return result
 
 
-part2()
+# print(part2())
