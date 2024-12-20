@@ -1,6 +1,7 @@
 ## Pull Data
 import re
 from pathlib import Path
+from z3 import BitVec, BitVecVal, Optimize, LShR
 
 from get_data import save_data, timeit
 
@@ -47,7 +48,7 @@ def part1(registers):
         }
         if 3 < operand < 7:
             combo_operand = registers[combo_dict[operand]]
-
+        print(opcode, operand, combo_operand)
         if opcode == 0:
             # The adv instruction (opcode 0) performs division.
             # The numerator is the value in the A register.
@@ -78,6 +79,7 @@ def part1(registers):
             # (For legacy reasons, this instruction reads an operand but ignores it.)
             registers["B"] = registers["B"] ^ registers["C"]
         elif opcode == 5:
+            print("HERE!!!", combo_operand % 8, registers["A"])
             # The out instruction (opcode 5) calculates the value of its
             # combo operand modulo 8, then outputs that value.
             # (If a program outputs multiple values, they are separated by commas.)
@@ -100,20 +102,47 @@ def part1(registers):
 print(part1(registers_original))
 
 
+registers_original = {}
+for line in data.split("\n\n")[0].split("\n"):
+    match = re.match(register_pattern, line)
+    registers_original[match[1]] = int(match[2])
+
+instructions = [
+    int(num)
+    for num in data.split("\n\n")[1].splitlines()[0].split("Program: ")[1].split(",")
+]
+
+
 ## Part 2
-# This is a brute force approach and will take a long time to run for large inputs
+# This ONLY works for my input. For someone else's input they need
+# to figure out the order in which their instructions are called
+# and modify the iterated steps for how a, b, c change.
 @timeit
 def part2():
-    desired_output = data.split("\n\n")[1].splitlines()[0].split("Program: ")[1]
-    register_a_value = 1
-    while True:
-        registers = registers_original.copy()
-        registers["A"] = register_a_value
-        program_output = part1(registers)
-        if program_output == desired_output:
-            break
-        register_a_value += 1
-    return register_a_value
+    A = BitVec("A", 64)
+    B = BitVecVal(0, 64)
+    C = BitVecVal(0, 64)
+    solver = Optimize()
+
+    a = A
+    b = B
+    c = C
+
+    for i in range(len(instructions)):
+        b = a % 8  # opcode 2, operand 4
+        b = b ^ 1  # opcode 1, operand 1
+        c = LShR(a, b)  # c = a // (1 << b)  # opcode 7, operand 5
+        b = b ^ c  # opcode 4, operand 7
+        b = b ^ 4  # opcode 1, operand 4
+        a = LShR(a, 3)  # a = a // (1 << 3)  # opcode 0, operand 3
+
+        solver.add(b % 8 == instructions[i])  # opcode 5, operand 5 (the output)
+
+    solver.minimize(A)
+    if solver.check().r == 1:
+        model = solver.model()
+        return model[A].as_long()
+    return None
 
 
-# print(part2())
+print(part2())
