@@ -21,22 +21,23 @@ directions = [(0, 1), (0, -1), (-1, 0), (1, 0)]
 
 @cache
 def search_nocheat(start_row, start_col, target_row, target_col):
-    vicheat_rowted = set()
+    visited = set()
 
     q = deque()
     q.append((0, start_row, start_col))
 
     while q:
         nocheat_time, row, col = q.popleft()
-        if (row, col) in vicheat_rowted:
+        if (row, col) in visited:
             continue
-        vicheat_rowted.add((row, col))
+
+        visited.add((row, col))
         if row == target_row and col == target_col:
             return nocheat_time
         else:
             for drow, dcol in directions:
-                at_pos = data_dict[row + drow][col + dcol]
-                if (at_pos != "#" and at_pos != "!") or (
+                char = data_dict[row + drow][col + dcol]
+                if (char != "#" and char != "!") or (
                     row + drow == target_row and col + dcol == target_col
                 ):
                     q.append((nocheat_time + 1, row + drow, col + dcol))
@@ -58,6 +59,8 @@ def part1():
     for cheat_row in range(rows):
         for cheat_col in range(cols):
             for drow, dcol in directions:
+                if data_dict[cheat_row][cheat_col] != "#":
+                    continue
                 if data_dict[cheat_row + drow][cheat_col + dcol] in {".", "E"}:
                     cheat_time = (
                         (
