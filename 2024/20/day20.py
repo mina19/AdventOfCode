@@ -72,9 +72,39 @@ def search_nocheat(start_row, start_col, target_row, target_col):
                     q.append((nocheat_time + 1, row + drow, col + dcol))
 
 
+@timeit
+def count_cheats(max_cheat_time):
+    nocheat_times_from_start = get_grid_times(start_row, start_col)
+    nocheat_times_to_end = get_grid_times(end_row, end_col)
+
+    nocheat_time = nocheat_times_from_start[(end_row, end_col)]
+
+    result = 0
+    for row1 in range(rows):
+        for col1 in range(cols):
+            if data_dict[row1][col1] in {"#", "!"}:
+                continue
+            for row2 in range(rows):
+                for col2 in range(cols):
+                    if data_dict[row2][col2] in {"#", "!"}:
+                        continue
+                    cheat_time = abs(row2 - row1) + abs(col2 - col1)
+                    if cheat_time > max_cheat_time:
+                        continue
+                    cheat_time = (
+                        nocheat_times_from_start[(row1, col1)]
+                        + cheat_time
+                        + nocheat_times_to_end[(row2, col2)]
+                    )
+                    if cheat_time <= nocheat_time - 100:
+                        result += 1
+
+    return result
+
+
 ## Part 1
 @timeit
-def part1():
+def part1_slow():
     nocheat_time = search_nocheat(start_row, start_col, end_row, end_col)
 
     result = 0
@@ -104,38 +134,8 @@ def part1():
     return result
 
 
-# print(part1())
+print(count_cheats(2))
 
 
 ## Part 2
-@timeit
-def part2():
-    nocheat_times_from_start = get_grid_times(start_row, start_col)
-    nocheat_times_to_end = get_grid_times(end_row, end_col)
-
-    nocheat_time = nocheat_times_from_start[(end_row, end_col)]
-
-    result = 0
-    for row1 in range(rows):
-        for col1 in range(cols):
-            if data_dict[row1][col1] in {"#", "!"}:
-                continue
-            for row2 in range(rows):
-                for col2 in range(cols):
-                    if data_dict[row2][col2] in {"#", "!"}:
-                        continue
-                    cheat_dist = abs(row2 - row1) + abs(col2 - col1)
-                    if cheat_dist > 20:
-                        continue
-                    cheat_time = (
-                        nocheat_times_from_start[(row1, col1)]
-                        + cheat_dist
-                        + nocheat_times_to_end[(row2, col2)]
-                    )
-                    if cheat_time <= nocheat_time - 100:
-                        result += 1
-
-    return result
-
-
-print(part2())
+print(count_cheats(20))
