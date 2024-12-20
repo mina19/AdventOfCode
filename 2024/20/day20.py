@@ -104,21 +104,38 @@ def part1():
     return result
 
 
-print(part1())
+# print(part1())
 
 
 ## Part 2
 @timeit
 def part2():
-    times_from_start = get_grid_times(start_row, start_col)
-    times_to_end = get_grid_times(end_row, end_col)
+    nocheat_times_from_start = get_grid_times(start_row, start_col)
+    nocheat_times_to_end = get_grid_times(end_row, end_col)
 
-    nocheat_time = times_from_start[(end_row, end_col)]
+    nocheat_time = nocheat_times_from_start[(end_row, end_col)]
 
     result = 0
-    ### DO SOMETHING
+    for row1 in range(rows):
+        for col1 in range(cols):
+            if data_dict[row1][col1] in {"#", "!"}:
+                continue
+            for row2 in range(rows):
+                for col2 in range(cols):
+                    if data_dict[row2][col2] in {"#", "!"}:
+                        continue
+                    cheat_dist = abs(row2 - row1) + abs(col2 - col1)
+                    if cheat_dist > 20:
+                        continue
+                    cheat_time = (
+                        nocheat_times_from_start[(row1, col1)]
+                        + cheat_dist
+                        + nocheat_times_to_end[(row2, col2)]
+                    )
+                    if cheat_time <= nocheat_time - 100:
+                        result += 1
 
     return result
 
 
-# print(part2())
+print(part2())
