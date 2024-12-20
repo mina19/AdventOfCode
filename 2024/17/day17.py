@@ -101,17 +101,6 @@ def part1(registers):
 print(part1(registers_original))
 
 
-registers_original = {}
-for line in data.split("\n\n")[0].split("\n"):
-    match = re.match(register_pattern, line)
-    registers_original[match[1]] = int(match[2])
-
-instructions = [
-    int(num)
-    for num in data.split("\n\n")[1].splitlines()[0].split("Program: ")[1].split(",")
-]
-
-
 ## Part 2
 # This ONLY works for my input. For someone else's input they need
 # to figure out the order in which their instructions are called
