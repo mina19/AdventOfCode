@@ -4,8 +4,8 @@ from collections import defaultdict
 from get_data import save_data, timeit
 
 save_data(2024, day := 21)
-data = Path(f"2024/{day}/day{day:02d}.txt").read_text()
-data = Path(f"2024/{day}/day{day:02d}_sample.txt").read_text()
+data = Path(f"2024/{day}/day{day:02d}.txt").read_text().splitlines()
+data = Path(f"2024/{day}/day{day:02d}_sample.txt").read_text().splitlines()
 
 # Information:
 
@@ -72,42 +72,63 @@ movement_dictionary = {
 
 # Check robot 1 movements
 def numeric_robot(movements):
-    robot1_movements = [char for char in movements]
+    robot_movements = [char for char in movements]
 
-    robot1_row, robot1_col = (3, 2)
-    robot1_output = ""
-    for movement in robot1_movements:
+    robot_row, robot_col = (3, 2)
+    robot_output = ""
+    for movement in robot_movements:
         drow, dcol = movement_dictionary[movement]
-        robot1_row += drow
-        robot1_col += dcol
+        robot_row += drow
+        robot_col += dcol
         if movement == "A":  # Pushing a button
-            robot1_output += numeric_keypad[robot1_row][robot1_col]
-    return robot1_output
+            robot_output += numeric_keypad[robot_row][robot_col]
+    return robot_output
 
 
 # Check robot 2, 3 movements
 def directional_robot(movements):
-    robot2_movements = [char for char in movements]
+    robot_movements = [char for char in movements]
 
-    robot2_row, robot2_col = (0, 2)
-    robot2_output = ""
-    for movement in robot2_movements:
+    robot_row, robot_col = (0, 2)
+    robot_output = ""
+    for movement in robot_movements:
         drow, dcol = movement_dictionary[movement]
-        robot2_row += drow
-        robot2_col += dcol
+        robot_row += drow
+        robot_col += dcol
         if movement == "A":  # Pushing a button
-            robot2_output += directional_keypad[robot2_row][robot2_col]
-    return robot2_output
+            robot_output += directional_keypad[robot_row][robot_col]
+    return robot_output
+
+
+def check_instructions(instructions, code):
+    robot2_instructions = directional_robot(instructions)
+    robot1_instructions = directional_robot(robot2_instructions)
+    return_code = numeric_robot(robot1_instructions)
+    return return_code == code
+
+
+sample_code_solutions = {
+    "029A": "<vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A",
+    "980A": "<v<A>>^AAAvA^A<vA<AA>>^AvAA<^A>A<v<A>A>^AAAvA<^A>A<vA>^A<A>A",
+    "179A": "<v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A",
+    "456A": "<v<A>>^AA<vA<A>>^AAvAA<^A>A<vA>^A<A>A<vA>^A<A>A<v<A>A>^AAvA<^A>A",
+    "379A": "<v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A",
+}
 
 
 ## Part 1
 @timeit
 def part1():
-    robot2_instructions = directional_robot(
-        "<vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A"
-    )
-    robot1_instructions = directional_robot(robot2_instructions)
-    return numeric_robot(robot1_instructions)
+    result = 0
+
+    for code in data:
+        # Find the instructions
+        instructions = sample_code_solutions[code]
+
+        if check_instructions(instructions, code):
+            result += len(instructions) * int("".join(filter(str.isdigit, code)))
+
+    return result
 
 
 print(part1())
