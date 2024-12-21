@@ -27,7 +27,6 @@ for row in range(rows):
 
 
 # Helper functions
-# Needed for Part 2
 def get_grid_times(target_row, target_col, grid_times: dict = None):
     if grid_times is None:
         grid_times = {}
@@ -103,34 +102,38 @@ def search_nocheat(start_row, start_col, target_row, target_col):
 @timeit
 def part1_slow():
     nocheat_time = search_nocheat(start_row, start_col, end_row, end_col)
+    wall_spaces = [
+        (row, col)
+        for row, col_dict in data_dict.items()
+        for col, value in col_dict.items()
+        if value == "#"
+    ]
 
     result = 0
-    for cheat_row in range(rows):
-        for cheat_col in range(cols):
-            for drow, dcol in directions:
-                if data_dict[cheat_row][cheat_col] != "#":
-                    continue
-                if data_dict[cheat_row + drow][cheat_col + dcol] in {".", "E"}:
-                    cheat_time = (
-                        (
-                            search_nocheat(start_row, start_col, cheat_row, cheat_col)
-                            + 1
-                            + search_nocheat(
-                                cheat_row + drow,
-                                cheat_col + dcol,
-                                end_row,
-                                end_col,
-                            )
+    for cheat_row, cheat_col in wall_spaces:
+        for drow, dcol in directions:
+            if data_dict[cheat_row + drow][cheat_col + dcol] in {".", "E"}:
+                cheat_time = (
+                    (
+                        search_nocheat(start_row, start_col, cheat_row, cheat_col)
+                        + 1
+                        + search_nocheat(
+                            cheat_row + drow,
+                            cheat_col + dcol,
+                            end_row,
+                            end_col,
                         )
-                        if (cheat_row, cheat_col) != (end_row, end_col)
-                        else nocheat_time
                     )
-                    if cheat_time <= nocheat_time - 100:
-                        result += 1
+                    if (cheat_row, cheat_col) != (end_row, end_col)
+                    else nocheat_time
+                )
+                if cheat_time <= nocheat_time - 100:
+                    result += 1
 
     return result
 
 
+print(part1_slow())
 print(count_cheats(2))
 
 
