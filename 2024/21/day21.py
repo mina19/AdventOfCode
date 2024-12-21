@@ -71,7 +71,7 @@ movement_dictionary = {
 
 
 # Check robot 1 movements
-def robot1(movements):
+def numeric_robot(movements):
     robot1_movements = [char for char in movements]
 
     robot1_row, robot1_col = (3, 2)
@@ -85,10 +85,29 @@ def robot1(movements):
     return robot1_output
 
 
+# Check robot 2, 3 movements
+def directional_robot(movements):
+    robot2_movements = [char for char in movements]
+
+    robot2_row, robot2_col = (0, 2)
+    robot2_output = ""
+    for movement in robot2_movements:
+        drow, dcol = movement_dictionary[movement]
+        robot2_row += drow
+        robot2_col += dcol
+        if movement == "A":  # Pushing a button
+            robot2_output += directional_keypad[robot2_row][robot2_col]
+    return robot2_output
+
+
 ## Part 1
 @timeit
 def part1():
-    return robot1("<A^A>^^AvvvA")
+    robot2_instructions = directional_robot(
+        "<vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A"
+    )
+    robot1_instructions = directional_robot(robot2_instructions)
+    return numeric_robot(robot1_instructions)
 
 
 print(part1())
