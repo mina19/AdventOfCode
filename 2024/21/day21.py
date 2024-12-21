@@ -2,6 +2,7 @@
 from pathlib import Path
 from collections import defaultdict, deque
 from get_data import save_data, timeit
+from itertools import product
 
 save_data(2024, day := 21)
 data = Path(f"2024/{day}/day{day:02d}.txt").read_text().splitlines()
@@ -118,37 +119,71 @@ sample_code_solutions = {
 }
 
 
-def find_shortest_path(grid, start_pos, end_char):
+def find_all_shortest_paths(grid, start_pos, end_char):
     queue = deque([(start_pos, "")])
-    visited = {start_pos}
+    level = 0
+    paths_at_level = defaultdict(list)  # Track paths by level
+    visited = {start_pos: level}  # Track level at which position was first visited
     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    found_target = False
+    target_level = float("inf")
 
     while queue:
-        (current_row, current_col), instructions = queue.pop()
+        current_pos, instructions = queue.popleft()
+        level = len(instructions) // 2  # Each move is two chars (direction + 'A')
 
-        # If we found the target number
+        # If this path is longer than a path we already found, stop
+        if level > target_level:
+            break
+
+        current_row, current_col = current_pos
+
+        # If we found the target
         if grid[current_row][current_col] == end_char:
-            return instructions, (current_row, current_col)
+            found_target = True
+            target_level = level
+            paths_at_level[level].append((instructions, current_pos))
+            continue
 
         # Try all directions
         for drow, dcol in directions:
             new_row, new_col = current_row + drow, current_col + dcol
+            new_pos = (new_row, new_col)
 
-            # If valid position and not visited
-            if grid[new_row][new_col] != "!" and (new_row, new_col) not in visited:
-                visited.add((new_row, new_col))
-                direction_symbol = movement_reverse_dict[(drow, dcol)]
-                updated_instructions = instructions + direction_symbol + "A"
-                queue.appendleft(((new_row, new_col), updated_instructions))
+            # If valid position
+            if grid[new_row][new_col] != "!":
+                # Can visit if never visited or visited at same level
+                if new_pos not in visited or visited[new_pos] == level + 1:
+                    visited[new_pos] = level + 1
+                    direction_symbol = movement_reverse_dict[(drow, dcol)]
+                    new_instructions = instructions + direction_symbol
+                    queue.append((new_pos, new_instructions))
 
-    return "", start_pos
+    return paths_at_level[target_level] if found_target else [("", start_pos)]
 
 
 def find_numerical_robot_instructions(code):
     start_pos = (3, 2)
+    paths_by_step = []
+    for _, char in enumerate(code):
+        all_results = find_all_shortest_paths(numeric_keypad, start_pos, char)
+        start_pos = all_results[0][1]
+        min_length = min(len(x[0]) for x in all_results)
+        shortest_tuples = [t for t in all_results if len(t[0]) == min_length]
+        paths_by_step.append(shortest_tuples)
+        print(shortest_tuples)
+        # instructions, start_pos = find_all_shortest_paths(numeric_keypad, start_pos, char)
+        # full_instructions += instructions
+    return full_instructions
+
+
+def find_directional_robot_instructions(code):
+    start_pos = (0, 2)
     full_instructions = ""
-    for index, char in enumerate(code):
-        instructions, start_pos = find_shortest_path(numeric_keypad, start_pos, char)
+    for _, char in enumerate(code):
+        instructions, start_pos = find_shortest_path(
+            directional_keypad, start_pos, char
+        )
         full_instructions += instructions
     return full_instructions
 
@@ -161,6 +196,7 @@ def part1():
     for code in data:
         # Find what needs to be pressed for robot1
         robot1_instructions = find_numerical_robot_instructions(code)
+        robot2_instructions = find_directional_robot_instructions(robot1_instructions)
         print(robot1_instructions)
         instructions = sample_code_solutions[code]
 
