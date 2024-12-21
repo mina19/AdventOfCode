@@ -48,6 +48,33 @@ def get_grid_times(target_row, target_col, grid_times: dict = None):
     return grid_times
 
 
+@timeit
+def count_cheats(max_cheat_time):
+    nocheat_times_from_start = get_grid_times(start_row, start_col)
+    nocheat_times_to_end = get_grid_times(end_row, end_col)
+
+    nocheat_time = nocheat_times_from_start[(end_row, end_col)]
+    legal_spaces = nocheat_times_from_start.keys()
+
+    result = 0
+    # Only need to iterate through the legal spaces
+    # Tip from Michael C.
+    for row1, col1 in legal_spaces:
+        for row2, col2 in legal_spaces:
+            cheat_time = abs(row2 - row1) + abs(col2 - col1)
+            if cheat_time > max_cheat_time:
+                continue
+            cheat_time = (
+                nocheat_times_from_start[(row1, col1)]
+                + cheat_time
+                + nocheat_times_to_end[(row2, col2)]
+            )
+            if cheat_time <= nocheat_time - 100:
+                result += 1
+
+    return result
+
+
 @cache
 def search_nocheat(start_row, start_col, target_row, target_col):
     visited = set()
@@ -70,36 +97,6 @@ def search_nocheat(start_row, start_col, target_row, target_col):
                     row + drow == target_row and col + dcol == target_col
                 ):
                     q.append((nocheat_time + 1, row + drow, col + dcol))
-
-
-@timeit
-def count_cheats(max_cheat_time):
-    nocheat_times_from_start = get_grid_times(start_row, start_col)
-    nocheat_times_to_end = get_grid_times(end_row, end_col)
-
-    nocheat_time = nocheat_times_from_start[(end_row, end_col)]
-
-    result = 0
-    for row1 in range(rows):
-        for col1 in range(cols):
-            if data_dict[row1][col1] in {"#", "!"}:
-                continue
-            for row2 in range(rows):
-                for col2 in range(cols):
-                    if data_dict[row2][col2] in {"#", "!"}:
-                        continue
-                    cheat_time = abs(row2 - row1) + abs(col2 - col1)
-                    if cheat_time > max_cheat_time:
-                        continue
-                    cheat_time = (
-                        nocheat_times_from_start[(row1, col1)]
-                        + cheat_time
-                        + nocheat_times_to_end[(row2, col2)]
-                    )
-                    if cheat_time <= nocheat_time - 100:
-                        result += 1
-
-    return result
 
 
 ## Part 1
