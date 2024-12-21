@@ -1,6 +1,6 @@
 ## Pull Data
 from pathlib import Path
-from collections import defaultdict
+from collections import defaultdict, deque
 from get_data import save_data, timeit
 
 save_data(2024, day := 21)
@@ -46,10 +46,10 @@ numeric_keypad_values = [
     ["7", "8", "9"],
     ["4", "5", "6"],
     ["1", "2", "3"],
-    ["", "0", "A"],
+    ["!", "0", "A"],
 ]
 
-directional_keypad_values = [["", "^", "A"], ["<", "v", ">"]]
+directional_keypad_values = [["!", "^", "A"], ["<", "v", ">"]]
 
 numeric_keypad = defaultdict(lambda: defaultdict(lambda: "!"))
 for row in range(len(numeric_keypad_values)):
@@ -61,13 +61,15 @@ for row in range(len(directional_keypad_values)):
     for col in range(len(directional_keypad_values[row])):
         directional_keypad[row][col] = directional_keypad_values[row][col]
 
-movement_dictionary = {
+movement_dict = {
     "<": (0, -1),
     "^": (-1, 0),
     ">": (0, 1),
     "v": (1, 0),
     "A": (0, 0),
 }
+
+movement_reverse_dict = {val: key for key, val in movement_dict.items()}
 
 
 # Check robot 1 movements
@@ -77,7 +79,7 @@ def numeric_robot(movements):
     robot_row, robot_col = (3, 2)
     robot_output = ""
     for movement in robot_movements:
-        drow, dcol = movement_dictionary[movement]
+        drow, dcol = movement_dict[movement]
         robot_row += drow
         robot_col += dcol
         if movement == "A":  # Pushing a button
@@ -92,7 +94,7 @@ def directional_robot(movements):
     robot_row, robot_col = (0, 2)
     robot_output = ""
     for movement in robot_movements:
-        drow, dcol = movement_dictionary[movement]
+        drow, dcol = movement_dict[movement]
         robot_row += drow
         robot_col += dcol
         if movement == "A":  # Pushing a button
@@ -116,13 +118,50 @@ sample_code_solutions = {
 }
 
 
+def find_shortest_path(grid, start_pos, end_char):
+    queue = deque([(start_pos, "")])
+    visited = {start_pos}
+    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+
+    while queue:
+        (current_row, current_col), instructions = queue.pop()
+
+        # If we found the target number
+        if grid[current_row][current_col] == end_char:
+            return instructions, (current_row, current_col)
+
+        # Try all directions
+        for drow, dcol in directions:
+            new_row, new_col = current_row + drow, current_col + dcol
+
+            # If valid position and not visited
+            if grid[new_row][new_col] != "!" and (new_row, new_col) not in visited:
+                visited.add((new_row, new_col))
+                direction_symbol = movement_reverse_dict[(drow, dcol)]
+                updated_instructions = instructions + direction_symbol + "A"
+                queue.appendleft(((new_row, new_col), updated_instructions))
+
+    return "", start_pos
+
+
+def find_numerical_robot_instructions(code):
+    start_pos = (3, 2)
+    full_instructions = ""
+    for index, char in enumerate(code):
+        instructions, start_pos = find_shortest_path(numeric_keypad, start_pos, char)
+        full_instructions += instructions
+    return full_instructions
+
+
 ## Part 1
 @timeit
 def part1():
     result = 0
 
     for code in data:
-        # Find the instructions
+        # Find what needs to be pressed for robot1
+        robot1_instructions = find_numerical_robot_instructions(code)
+        print(robot1_instructions)
         instructions = sample_code_solutions[code]
 
         if check_instructions(instructions, code):
