@@ -202,33 +202,26 @@ def part1():
         robot1_instructions = find_numeric_robot_instructions(code)
 
         robot2_instructions = []
-        robot3_instructions = []
         for robot1_instruction in robot1_instructions:
             robot2_instruction = find_directional_robot_instructions(robot1_instruction)
-            robot2_instructions.append(robot2_instruction)
-            robot3_instruction = find_directional_robot_instructions(robot2_instruction)
-            robot3_instructions.append(robot3_instruction)
-            print(robot2_instruction, robot3_instruction)
-            print("done")
+            robot2_instructions += robot2_instruction
 
-        # min_length = min(len(x) for x in robot2_instructions)
-        # shortest_robot2_instructions = [
-        #     t for t in robot2_instructions if len(t) == min_length
-        # ]
+        min_length = min(len(x) for x in robot2_instructions)
+        shortest_robot2_instructions = [
+            t for t in robot2_instructions if len(t) == min_length
+        ]
 
         robot3_instructions = []
-        for robot2_instruction in robot2_instructions:
+        for robot2_instruction in shortest_robot2_instructions:
             robot3_instruction = find_directional_robot_instructions(robot2_instruction)
-            robot3_instructions.append(robot3_instruction)
-            print(robot3_instruction)
+            robot3_instructions += robot3_instruction
 
         min_length = min(len(x) for x in robot3_instructions)
         shortest_robot3_instructions = [
             t for t in robot3_instructions if len(t) == min_length
         ]
 
-        print(shortest_robot3_instructions)
-        instructions = sample_code_solutions[code]
+        instructions = shortest_robot3_instructions[0]
 
         if check_instructions(instructions, code):
             result += len(instructions) * int("".join(filter(str.isdigit, code)))
