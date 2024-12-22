@@ -64,15 +64,7 @@ for row in range(len(directional_keypad_values)):
     for col in range(len(directional_keypad_values[row])):
         directional_keypad[row][col] = directional_keypad_values[row][col]
 
-movement_dict = {
-    "<": (0, -1),
-    "^": (-1, 0),
-    ">": (0, 1),
-    "v": (1, 0),
-    "A": (0, 0),
-}
-
-movement_reverse_dict = {val: key for key, val in movement_dict.items()}
+movement_dict = {(0, -1): '<', (-1, 0): '^', (0, 1): '>', (1, 0): 'v', (0, 0): 'A'}
 
 
 @cache
@@ -103,7 +95,7 @@ def find_all_shortest_paths(start_pos, end_char, grid_type="numeric"):
            continue
            
        # Try each direction
-       for direction in movement_reverse_dict:
+       for direction in movement_dict:
            drow, dcol = direction
            new_row, new_col = current_row + drow, current_col + dcol
            new_pos = (new_row, new_col)
@@ -113,7 +105,7 @@ def find_all_shortest_paths(start_pos, end_char, grid_type="numeric"):
                # Only visit if new or at same level
                if new_pos not in visited or visited[new_pos] == level + 1:
                    visited[new_pos] = level + 1
-                   new_instructions = instructions + movement_reverse_dict[(drow, dcol)]
+                   new_instructions = instructions + movement_dict[(drow, dcol)]
                    queue.append((new_pos, new_instructions))
    
    return (paths_at_level[target_level], final_pos) if found_target else None
@@ -156,7 +148,7 @@ def solve(n):
         robot1_instructions = find_robot_instructions(code, "numeric")
 
         instructions = robot1_instructions
-        for i in range(n):
+        for _ in range(n):
             instructions = direction_robot_instructions(instructions)
 
         result += len(instructions[0]) * int("".join(filter(str.isdigit, code)))
