@@ -123,7 +123,9 @@ def part1_part2_bfs():
         if current_position == end_position:
             if current_score <= best_score:
                 if current_score < best_score:
-                    best_paths = []  # Clear all previous paths since they're not optimal
+                    best_paths = (
+                        []
+                    )  # Clear all previous paths since they're not optimal
                 best_score = current_score  # Update best score
                 best_paths.append(current_path)  # Add this path
             continue
