@@ -4,6 +4,7 @@ from typing import Any, Callable
 
 import requests
 import urllib3
+
 from session import session
 
 urllib3.disable_warnings()

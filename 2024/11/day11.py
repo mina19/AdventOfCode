@@ -1,6 +1,6 @@
 ## Pull Data
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
 
 from get_data import save_data, timeit
 

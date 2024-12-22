@@ -1,7 +1,8 @@
 ## Pull Data
 import re
 from pathlib import Path
-from z3 import BitVec, BitVecVal, Optimize, LShR
+
+from z3 import BitVec, BitVecVal, LShR, Optimize
 
 from get_data import save_data, timeit
 

@@ -2,6 +2,7 @@
 from pathlib import Path
 
 import numpy as np
+
 from get_data import save_data, timeit
 
 save_data(2024, day := 4)

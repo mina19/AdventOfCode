@@ -1,8 +1,8 @@
 ## Pull Data
-from pathlib import Path
 from collections import defaultdict, deque
-from heapq import heappush, heappop
+from heapq import heappop, heappush
 from itertools import chain
+from pathlib import Path
 
 from get_data import save_data, timeit
 

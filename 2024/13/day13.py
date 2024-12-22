@@ -1,8 +1,9 @@
 ## Pull Data
-from pathlib import Path
 import re
-from get_data import save_data, timeit
 from heapq import heappop, heappush
+from pathlib import Path
+
+from get_data import save_data, timeit
 
 save_data(2024, day := 13)
 data = Path(f"2024/{day}/day{day:02d}.txt").read_text()

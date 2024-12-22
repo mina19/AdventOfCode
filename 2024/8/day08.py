@@ -1,9 +1,9 @@
 ## Pull Data
+from collections import defaultdict
+from itertools import combinations
 from pathlib import Path
 
 from get_data import save_data, timeit
-from collections import defaultdict
-from itertools import combinations
 
 save_data(2024, day := 8)
 data = Path(f"2024/8/day{day:02d}.txt").read_text().splitlines()

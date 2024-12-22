@@ -1,7 +1,7 @@
 ## Pull Data
-from pathlib import Path
-from collections import defaultdict
 import copy
+from collections import defaultdict
+from pathlib import Path
 
 from get_data import save_data, timeit
 
