@@ -76,102 +76,54 @@ movement_reverse_dict = {val: key for key, val in movement_dict.items()}
 
 
 @cache
-def find_all_shortest_paths_numeric(start_pos, end_char):
-    queue = deque([(start_pos, "")])
-    level = 0
-    paths_at_level = defaultdict(list)  # Track paths by level
-    visited = {start_pos: level}  # Track level at which position was first visited
-    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
-    final_pos = (0, 0)
-    found_target = False
-    target_level = float("inf")
-
-    while queue:
-        current_pos, instructions = queue.popleft()
-        level = len(instructions) // 2  # Each move is two chars (direction + 'A')
-
-        # If this path is longer than a path we already found, stop
-        if level > target_level:
-            break
-
-        current_row, current_col = current_pos
-
-        # If we found the target
-        if numeric_keypad[current_row][current_col] == end_char:
-            found_target = True
-            target_level = level
-            final_pos = current_pos
-            paths_at_level[level].append(instructions)
-            continue
-
-        # Try all directions
-        for drow, dcol in directions:
-            new_row, new_col = current_row + drow, current_col + dcol
-            new_pos = (new_row, new_col)
-
-            # If valid position
-            if numeric_keypad[new_row][new_col] != "!":
-                # Can visit if never visited or visited at same level
-                if new_pos not in visited or visited[new_pos] == level + 1:
-                    visited[new_pos] = level + 1
-                    direction_symbol = movement_reverse_dict[(drow, dcol)]
-                    new_instructions = instructions + direction_symbol
-                    queue.append((new_pos, new_instructions))
-
-    return (paths_at_level[target_level], final_pos) if found_target else None
+def find_all_shortest_paths(start_pos, end_char, grid_type="numeric"):
+   # Initialize queue and tracking variables
+   queue = deque([(start_pos, "")]) # Track position and path
+   paths_at_level = defaultdict(list)
+   visited = {start_pos: 0}  # Position -> level mapping
+   target_level = float("inf")
+   final_pos = None
+   found_target = False
+   grid = numeric_keypad if grid_type == "numeric" else directional_keypad
+   
+   while queue:
+       (current_row, current_col), instructions = queue.popleft()
+       level = len(instructions)
+       
+       # Stop if path is longer than shortest found
+       if level > target_level:
+           break
+           
+       # Check if we found target
+       if grid[current_row][current_col] == end_char:
+           found_target = True
+           target_level = level
+           final_pos = (current_row, current_col)
+           paths_at_level[level].append(instructions)
+           continue
+           
+       # Try each direction
+       for direction in movement_reverse_dict:
+           drow, dcol = direction
+           new_row, new_col = current_row + drow, current_col + dcol
+           new_pos = (new_row, new_col)
+           
+           # Check if move is valid
+           if grid[new_row][new_col] != "!":
+               # Only visit if new or at same level
+               if new_pos not in visited or visited[new_pos] == level + 1:
+                   visited[new_pos] = level + 1
+                   new_instructions = instructions + movement_reverse_dict[(drow, dcol)]
+                   queue.append((new_pos, new_instructions))
+   
+   return (paths_at_level[target_level], final_pos) if found_target else None
 
 
-@cache
-def find_all_shortest_paths_directional(start_pos, end_char):
-    queue = deque([(start_pos, "")])
-    level = 0
-    paths_at_level = defaultdict(list)  # Track paths by level
-    visited = {start_pos: level}  # Track level at which position was first visited
-    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
-    final_pos = (0, 0)
-    found_target = False
-    target_level = float("inf")
-
-    while queue:
-        current_pos, instructions = queue.popleft()
-        level = len(instructions) // 2  # Each move is two chars (direction + 'A')
-
-        # If this path is longer than a path we already found, stop
-        if level > target_level:
-            break
-
-        current_row, current_col = current_pos
-
-        # If we found the target
-        if directional_keypad[current_row][current_col] == end_char:
-            found_target = True
-            target_level = level
-            final_pos = current_pos
-            paths_at_level[level].append(instructions)
-            continue
-
-        # Try all directions
-        for drow, dcol in directions:
-            new_row, new_col = current_row + drow, current_col + dcol
-            new_pos = (new_row, new_col)
-
-            # If valid position
-            if directional_keypad[new_row][new_col] != "!":
-                # Can visit if never visited or visited at same level
-                if new_pos not in visited or visited[new_pos] == level + 1:
-                    visited[new_pos] = level + 1
-                    direction_symbol = movement_reverse_dict[(drow, dcol)]
-                    new_instructions = instructions + direction_symbol
-                    queue.append((new_pos, new_instructions))
-
-    return (paths_at_level[target_level], final_pos) if found_target else None
-
-
-def find_numeric_robot_instructions(code):
-    start_pos = (3, 2)
+def find_robot_instructions(code, instruction_type = "numeric"):
+    start_pos = (3, 2) if instruction_type == "numeric" else (0,2)
     paths_by_step = []
     for _, char in enumerate(code):
-        all_results = find_all_shortest_paths_numeric(start_pos, char)
+        all_results = find_all_shortest_paths(start_pos, char, instruction_type)
         if all_results:
             start_pos = all_results[1]
             min_length = min(len(x) for x in all_results[0])
@@ -181,25 +133,11 @@ def find_numeric_robot_instructions(code):
     return instruction_candidates
 
 
-def find_directional_robot_instructions(code):
-    start_pos = (0, 2)
-    paths_by_step = []
-    for _, char in enumerate(code):
-        all_results = find_all_shortest_paths_directional(start_pos, char)
-        if all_results:
-            start_pos = all_results[1]
-            min_length = min(len(x) for x in all_results[0])
-            shortest_tuples = [t + "A" for t in all_results[0] if len(t) == min_length]
-            paths_by_step.append(shortest_tuples)
-        instruction_candidates = ["".join(combo) for combo in product(*paths_by_step)]
-    return instruction_candidates
-
-
 # Generalized directional robot results
 def direction_robot_instructions(instructions):
     robot_instructions = []
     for instruction in instructions:
-        robot_instruction = find_directional_robot_instructions(instruction)
+        robot_instruction = find_robot_instructions(instruction, "directional")
         robot_instructions += robot_instruction
 
     min_length = min(len(x) for x in robot_instructions)
@@ -215,7 +153,7 @@ def solve(n):
 
     for code in data:
         # Find what needs to be pressed for robot1
-        robot1_instructions = find_numeric_robot_instructions(code)
+        robot1_instructions = find_robot_instructions(code, "numeric")
 
         instructions = robot1_instructions
         for i in range(n):
