@@ -7,13 +7,15 @@ save_data(2024, day := 22)
 data = Path(f"2024/{day}/day{day:02d}.txt").read_text().splitlines()
 # data = Path(f"2024/{day}/day{day:02d}_sample.txt").read_text().splitlines()
 
+
 # Helper functions
 def mix(s, num):
     """
-    To mix a value into the secret number, calculate 
+    To mix a value into the secret number, calculate
     the bitwise XOR of the given value and the secret number.
     """
     return s ^ num
+
 
 def prune(s):
     """
@@ -21,6 +23,7 @@ def prune(s):
     secret number modulo 16777216.
     """
     return s % 16777216
+
 
 def iterate(s):
     # Calculate the result of multiplying the secret number by 64.
@@ -40,7 +43,8 @@ def iterate(s):
     s = prune(mix(s, s * 2048))
 
     return s
-    
+
+
 ## Part 1
 @timeit
 def part1():
