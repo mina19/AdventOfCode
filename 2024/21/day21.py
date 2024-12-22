@@ -1,9 +1,10 @@
 ## Pull Data
-from pathlib import Path
 from collections import defaultdict, deque
-from get_data import save_data, timeit
-from itertools import product
 from functools import cache
+from itertools import product
+from pathlib import Path
+
+from get_data import save_data, timeit
 
 save_data(2024, day := 21)
 data = Path(f"2024/{day}/day{day:02d}.txt").read_text().splitlines()
@@ -74,7 +75,8 @@ movement_dict = {
 movement_reverse_dict = {val: key for key, val in movement_dict.items()}
 
 
-def find_all_shortest_paths(grid, start_pos, end_char):
+@cache
+def find_all_shortest_paths_numeric(start_pos, end_char):
     queue = deque([(start_pos, "")])
     level = 0
     paths_at_level = defaultdict(list)  # Track paths by level
@@ -95,7 +97,7 @@ def find_all_shortest_paths(grid, start_pos, end_char):
         current_row, current_col = current_pos
 
         # If we found the target
-        if grid[current_row][current_col] == end_char:
+        if numeric_keypad[current_row][current_col] == end_char:
             found_target = True
             target_level = level
             final_pos = current_pos
@@ -108,7 +110,53 @@ def find_all_shortest_paths(grid, start_pos, end_char):
             new_pos = (new_row, new_col)
 
             # If valid position
-            if grid[new_row][new_col] != "!":
+            if numeric_keypad[new_row][new_col] != "!":
+                # Can visit if never visited or visited at same level
+                if new_pos not in visited or visited[new_pos] == level + 1:
+                    visited[new_pos] = level + 1
+                    direction_symbol = movement_reverse_dict[(drow, dcol)]
+                    new_instructions = instructions + direction_symbol
+                    queue.append((new_pos, new_instructions))
+
+    return (paths_at_level[target_level], final_pos) if found_target else None
+
+
+@cache
+def find_all_shortest_paths_directional(start_pos, end_char):
+    queue = deque([(start_pos, "")])
+    level = 0
+    paths_at_level = defaultdict(list)  # Track paths by level
+    visited = {start_pos: level}  # Track level at which position was first visited
+    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    final_pos = (0, 0)
+    found_target = False
+    target_level = float("inf")
+
+    while queue:
+        current_pos, instructions = queue.popleft()
+        level = len(instructions) // 2  # Each move is two chars (direction + 'A')
+
+        # If this path is longer than a path we already found, stop
+        if level > target_level:
+            break
+
+        current_row, current_col = current_pos
+
+        # If we found the target
+        if directional_keypad[current_row][current_col] == end_char:
+            found_target = True
+            target_level = level
+            final_pos = current_pos
+            paths_at_level[level].append(instructions)
+            continue
+
+        # Try all directions
+        for drow, dcol in directions:
+            new_row, new_col = current_row + drow, current_col + dcol
+            new_pos = (new_row, new_col)
+
+            # If valid position
+            if directional_keypad[new_row][new_col] != "!":
                 # Can visit if never visited or visited at same level
                 if new_pos not in visited or visited[new_pos] == level + 1:
                     visited[new_pos] = level + 1
@@ -123,7 +171,7 @@ def find_numeric_robot_instructions(code):
     start_pos = (3, 2)
     paths_by_step = []
     for _, char in enumerate(code):
-        all_results = find_all_shortest_paths(numeric_keypad, start_pos, char)
+        all_results = find_all_shortest_paths_numeric(start_pos, char)
         if all_results:
             start_pos = all_results[1]
             min_length = min(len(x) for x in all_results[0])
@@ -137,7 +185,7 @@ def find_directional_robot_instructions(code):
     start_pos = (0, 2)
     paths_by_step = []
     for _, char in enumerate(code):
-        all_results = find_all_shortest_paths(directional_keypad, start_pos, char)
+        all_results = find_all_shortest_paths_directional(start_pos, char)
         if all_results:
             start_pos = all_results[1]
             min_length = min(len(x) for x in all_results[0])
