@@ -183,4 +183,7 @@ print(solve(2))
 
 
 ## Part 2
+# Better solution is to hash direction instructions from every starting point
+# on the directional keypad to every end point
+# Need more time to do this later
 print(solve(25))
