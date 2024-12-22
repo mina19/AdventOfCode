@@ -125,6 +125,7 @@ def find_all_shortest_paths(grid, start_pos, end_char):
     paths_at_level = defaultdict(list)  # Track paths by level
     visited = {start_pos: level}  # Track level at which position was first visited
     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    final_pos = (0, 0)
     found_target = False
     target_level = float("inf")
 
@@ -142,7 +143,8 @@ def find_all_shortest_paths(grid, start_pos, end_char):
         if grid[current_row][current_col] == end_char:
             found_target = True
             target_level = level
-            paths_at_level[level].append((instructions, current_pos))
+            final_pos = current_pos
+            paths_at_level[level].append(instructions)
             continue
 
         # Try all directions
@@ -159,33 +161,35 @@ def find_all_shortest_paths(grid, start_pos, end_char):
                     new_instructions = instructions + direction_symbol
                     queue.append((new_pos, new_instructions))
 
-    return paths_at_level[target_level] if found_target else [("", start_pos)]
+    return (paths_at_level[target_level], final_pos) if found_target else None
 
 
-def find_numerical_robot_instructions(code):
+def find_numeric_robot_instructions(code):
     start_pos = (3, 2)
     paths_by_step = []
     for _, char in enumerate(code):
         all_results = find_all_shortest_paths(numeric_keypad, start_pos, char)
-        start_pos = all_results[0][1]
-        min_length = min(len(x[0]) for x in all_results)
-        shortest_tuples = [t for t in all_results if len(t[0]) == min_length]
-        paths_by_step.append(shortest_tuples)
-        print(shortest_tuples)
-        # instructions, start_pos = find_all_shortest_paths(numeric_keypad, start_pos, char)
-        # full_instructions += instructions
-    return full_instructions
+        if all_results:
+            start_pos = all_results[1]
+            min_length = min(len(x) for x in all_results[0])
+            shortest_tuples = [t + "A" for t in all_results[0] if len(t) == min_length]
+            paths_by_step.append(shortest_tuples)
+    instruction_candidates = ["".join(combo) for combo in product(*paths_by_step)]
+    return instruction_candidates
 
 
 def find_directional_robot_instructions(code):
     start_pos = (0, 2)
-    full_instructions = ""
+    paths_by_step = []
     for _, char in enumerate(code):
-        instructions, start_pos = find_shortest_path(
-            directional_keypad, start_pos, char
-        )
-        full_instructions += instructions
-    return full_instructions
+        all_results = find_all_shortest_paths(directional_keypad, start_pos, char)
+        if all_results:
+            start_pos = all_results[1]
+            min_length = min(len(x) for x in all_results[0])
+            shortest_tuples = [t + "A" for t in all_results[0] if len(t) == min_length]
+            paths_by_step.append(shortest_tuples)
+        instruction_candidates = ["".join(combo) for combo in product(*paths_by_step)]
+    return instruction_candidates
 
 
 ## Part 1
@@ -195,9 +199,35 @@ def part1():
 
     for code in data:
         # Find what needs to be pressed for robot1
-        robot1_instructions = find_numerical_robot_instructions(code)
-        robot2_instructions = find_directional_robot_instructions(robot1_instructions)
-        print(robot1_instructions)
+        robot1_instructions = find_numeric_robot_instructions(code)
+
+        robot2_instructions = []
+        robot3_instructions = []
+        for robot1_instruction in robot1_instructions:
+            robot2_instruction = find_directional_robot_instructions(robot1_instruction)
+            robot2_instructions.append(robot2_instruction)
+            robot3_instruction = find_directional_robot_instructions(robot2_instruction)
+            robot3_instructions.append(robot3_instruction)
+            print(robot2_instruction, robot3_instruction)
+            print("done")
+
+        # min_length = min(len(x) for x in robot2_instructions)
+        # shortest_robot2_instructions = [
+        #     t for t in robot2_instructions if len(t) == min_length
+        # ]
+
+        robot3_instructions = []
+        for robot2_instruction in robot2_instructions:
+            robot3_instruction = find_directional_robot_instructions(robot2_instruction)
+            robot3_instructions.append(robot3_instruction)
+            print(robot3_instruction)
+
+        min_length = min(len(x) for x in robot3_instructions)
+        shortest_robot3_instructions = [
+            t for t in robot3_instructions if len(t) == min_length
+        ]
+
+        print(shortest_robot3_instructions)
         instructions = sample_code_solutions[code]
 
         if check_instructions(instructions, code):
