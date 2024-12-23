@@ -1,5 +1,4 @@
 ## Pull Data
-from collections import defaultdict
 from pathlib import Path
 
 from get_data import save_data, timeit
@@ -9,6 +8,12 @@ data = Path(f"2024/{day}/day{day:02d}.txt").read_text().splitlines()
 # data = Path(f"2024/{day}/day{day:02d}_sample.txt").read_text().splitlines()
 
 network_pairs = [line.split('-') for line in data]
+
+# Get all unique computers
+all_computers = set()
+for comp1, comp2 in network_pairs:
+    all_computers.add(comp1)
+    all_computers.add(comp2)
 
 ## Part 1
 @timeit
@@ -27,9 +32,9 @@ def part1():
        connected_networks = [pair for pair in network_pairs if other_comp in pair]
        
        # For each network connected to other_comp
-       for connected_net in connected_networks:
+       for connected_network in connected_networks:
            # Find the third computer
-           third_comp = next(comp for comp in connected_net if comp != other_comp)
+           third_comp = next(comp for comp in connected_network if comp != other_comp)
            
            # Check if third_comp is also connected to t_comp
            if [third_comp, t_comp] in network_pairs or [t_comp, third_comp] in network_pairs:
