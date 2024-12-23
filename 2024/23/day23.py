@@ -1,6 +1,4 @@
 ## Pull Data
-from collections import defaultdict
-from itertools import combinations
 from pathlib import Path
 
 from get_data import save_data, timeit
