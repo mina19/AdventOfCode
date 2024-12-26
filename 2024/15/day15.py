@@ -6,7 +6,7 @@ from get_data import save_data, timeit
 
 save_data(2024, day := 15)
 data = Path(f"2024/{day}/day{day:02d}.txt").read_text()
-data = Path(f"2024/{day}/day{day:02d}_sample.txt").read_text()
+# data = Path(f"2024/{day}/day{day:02d}_sample.txt").read_text()
 
 # Get the robot movements
 movements = data.split("\n\n")[1].replace("\n", "")
@@ -95,6 +95,60 @@ def part1():
 print(part1())
 
 
+# Helper functions for Part 2
+def check_valid_move(drow, dcol, row, col, already_checked):
+    if (row, col) in already_checked:
+        return already_checked[(row, col)]
+    already_checked[(row, col)] = True
+    if warehouse_map_part2_dict[row][col] == "#":
+        already_checked[(row, col)] = False
+    elif warehouse_map_part2_dict[row][col] == ".":
+        already_checked[(row, col)] = True
+    elif warehouse_map_part2_dict[row][col] == "@":
+        already_checked[(row, col)] = check_valid_move(
+            drow, dcol, row + drow, col + dcol, already_checked
+        )
+    elif warehouse_map_part2_dict[row][col] == "[":
+        already_checked[(row, col)] = check_valid_move(
+            drow, dcol, row + drow, col + dcol, already_checked
+        ) and check_valid_move(drow, dcol, row, col + 1, already_checked)
+    elif warehouse_map_part2_dict[row][col] == "]":
+        already_checked[(row, col)] = check_valid_move(
+            drow, dcol, row + drow, col + dcol, already_checked
+        ) and check_valid_move(drow, dcol, row, col - 1, already_checked)
+    return already_checked[(row, col)]
+
+
+def move_robot(drow, dcol, row, col, already_committed):
+    if (row, col) in already_committed:
+        return
+    already_committed.add((row, col))
+    if warehouse_map_part2_dict[row][col] == "#":
+        return
+    elif warehouse_map_part2_dict[row][col] == ".":
+        return
+    elif warehouse_map_part2_dict[row][col] == "@":
+        move_robot(drow, dcol, row + drow, col + dcol, already_committed)
+        warehouse_map_part2_dict[row + drow][col + dcol] = warehouse_map_part2_dict[
+            row
+        ][col]
+        warehouse_map_part2_dict[row][col] = "."
+    elif warehouse_map_part2_dict[row][col] == "[":
+        move_robot(drow, dcol, row + drow, col + dcol, already_committed)
+        move_robot(drow, dcol, row, col + 1, already_committed)
+        warehouse_map_part2_dict[row + drow][col + dcol] = warehouse_map_part2_dict[
+            row
+        ][col]
+        warehouse_map_part2_dict[row][col] = "."
+    elif warehouse_map_part2_dict[row][col] == "]":
+        move_robot(drow, dcol, row + drow, col + dcol, already_committed)
+        move_robot(drow, dcol, row, col - 1, already_committed)
+        warehouse_map_part2_dict[row + drow][col + dcol] = warehouse_map_part2_dict[
+            row
+        ][col]
+        warehouse_map_part2_dict[row][col] = "."
+
+
 ## Part 2
 @timeit
 def part2():
@@ -108,13 +162,19 @@ def part2():
     # Begin movements
     for movement in movements:
         drow, dcol = character_direction_dict[movement]
-        # Need to code how the robot checks valid moves and moves
-        pass
+        if check_valid_move(drow, dcol, robot_row, robot_col, dict()):
+            move_robot(drow, dcol, robot_row, robot_col, set())
+            robot_row, robot_col = robot_row + drow, robot_col + dcol
 
     # Sum of GPS coordinates
     # For these larger boxes, distances are measured from the edge
     # of the map to the closest edge of the box in question.
-    return
+    return sum(
+        100 * row + col
+        for row in range(rows_part2)
+        for col in range(cols_part2)
+        if warehouse_map_part2_dict[row][col] == "["
+    )
 
 
 print(part2())
