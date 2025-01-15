@@ -63,6 +63,9 @@ print(part1())
 ## Part 2
 @timeit
 def part2():
+    # Don't waste time trying to find the optimal 4 moves.
+    # Compute the number of bananas bought for all possible 4 moves
+    # Find the max of the bananas bought at the end...
     buys = defaultdict(lambda: [0]*len(data))
     
     for i, line in enumerate(data):
