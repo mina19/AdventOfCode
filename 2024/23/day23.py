@@ -77,6 +77,7 @@ def find_max_clique():
 
         # Try including the current node
         new_clique = current_clique | {current_node}
+        # ONLY consider nodes that are connected to it in our next recursive call
         if is_clique(new_clique):
             cliques.extend(find_all_cliques(new_clique, 
                                          [node for node in remaining[1:] 
