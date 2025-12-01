@@ -41,20 +41,18 @@ def part2(data=data, position=50):
         distance = distance * (1 if line[0] == "R" else -1)
 
         old_position = position
-        new_position = old_position + distance
+        position += distance
 
-        if new_position > track_length:
+        if position > track_length:
             zero_passed += 1
         # No double-counting
-        if old_position != 0 and new_position < 0:
+        if old_position != 0 and position < 0:
             zero_passed += 1
 
-        new_position %= track_length
+        position %= track_length
 
-        if new_position == 0:
+        if position == 0:
             zero_passed += 1
-
-        position = new_position
 
     return zero_passed
 
