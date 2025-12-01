@@ -3,9 +3,9 @@ from pathlib import Path
 
 from get_data import save_data, timeit
 
-save_data(2024, day := 1)
-data = Path(f"2024/{day}/day{day:02d}.txt").read_text()
-data = Path(f"2024/{day}/day{day:02d}_sample.txt").read_text()
+save_data(year := 2025, day := 1)
+data = Path(f"{year}/{day}/day{day:02d}.txt").read_text()
+data = Path(f"{year}/{day}/day{day:02d}_sample.txt").read_text()
 
 
 ## Part 1
