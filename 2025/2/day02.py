@@ -44,24 +44,25 @@ def part2():
     invalid_ids = []
 
     def generate_invalid_ids2(num1, num2):
-        invalid_ids = []
+        invalid_ids = set()
         max_digits = len(str(num2))
+
         for seq_len in range(1, max_digits // 2 + 1):
-            min_prefix = 10 ** (seq_len - 1)
-            max_prefix = 10**seq_len
-            for prefix in range(min_prefix, max_prefix):
-                s = str(prefix)
-                max_repeats = max_digits // seq_len
-                for repeat in range(2, max_repeats + 1):
-                    candidate_str = s * repeat
+            for prefix in range(10 ** (seq_len - 1), 10**seq_len):
+                prefix_str = str(prefix)
+
+                for repeat_count in range(2, max_digits // seq_len + 1):
+                    candidate_str = prefix_str * repeat_count
                     if len(candidate_str) > max_digits:
                         break
+
                     candidate = int(candidate_str)
                     if candidate > num2:
                         break
                     if candidate >= num1:
-                        invalid_ids.append(candidate)
-        return list(set(invalid_ids))
+                        invalid_ids.add(candidate)
+
+        return sorted(invalid_ids)
 
     for start, end in zip(first_id, last_id):
         invalid_ids += generate_invalid_ids2(start, end)
