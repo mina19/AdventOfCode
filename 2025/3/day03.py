@@ -33,6 +33,7 @@ print(part1())
 @timeit
 def part2():
     lines = data.splitlines()
+    num_length = 12
 
     result = 0
     for line in lines:
@@ -54,18 +55,18 @@ def part2():
         #  ['1', '91', '981', '9871', '98761', '987651', '9876541', '98765431', '987654321', '9876543211', '98765432111', '987654321111']]
 
         # Create DP table for storing best numbers where dp[i][j] is the best number ending with line[i] using j+1 digits or less
-        dp = [["" for i in range(12)] for j in range(len(line))]
+        dp = [["" for i in range(num_length)] for j in range(len(line))]
         joltage = 0
 
         for i in range(len(line)):
             dp[i][0] = line[i]
-            # Try to build numbers of length 2 to 12 ending at position i
-            for j in range(1, 12):
+            # Try to build numbers of length 2 to num_length ending at position i
+            for j in range(1, num_length):
                 accumulator = ""
                 # Look back at all previous positions to find the best number of length j
                 for k in range(0, i):
                     current = dp[k][j - 1]
-                    # If curr is not empty and is greater than accumulator, update accumulator
+                    # If current is not empty and is greater than accumulator, update accumulator
                     if current != "" and (
                         accumulator == "" or int(current) > int(accumulator)
                     ):
@@ -74,9 +75,8 @@ def part2():
                         print("debug")
                 # Build the new number by appending the current digit
                 dp[i][j] = accumulator + line[i]
-            # After filling dp for this position, check if we have a new max for 12 digits
-            joltage = max(joltage, int(dp[i][11]))
-        # Add the largest 12-digit number for this line to the result
+            # Check if we have a new max
+            joltage = max(joltage, int(dp[i][num_length - 1]))
         result += joltage
 
     return result
