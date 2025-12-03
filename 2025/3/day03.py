@@ -54,7 +54,7 @@ def part2():
         #  ['1', '91', '981', '9871', '98761', '987651', '9876541', '98765431', '987654321', '9876543211', '98765432111', '987654321111'],
         #  ['1', '91', '981', '9871', '98761', '987651', '9876541', '98765431', '987654321', '9876543211', '98765432111', '987654321111']]
 
-        # Create DP table for storing best numbers where dp[i][j] is the best number ending with line[i] using j+1 digits or less
+        # Create DP table for storing best numbers where dp[i][j] is the best number ending with line[i] using j+1 digits
         dp = [["" for i in range(num_length)] for j in range(len(line))]
         joltage = 0
 
