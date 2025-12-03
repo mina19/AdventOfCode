@@ -77,7 +77,7 @@ def part2():
             # Check if we have a new max
             if dp[i][num_length - 1] != "":
                 joltage = max(joltage, int(dp[i][num_length - 1]))
-            print(dp)
+
         result += joltage
 
     return result
