@@ -71,8 +71,6 @@ def part2():
                         accumulator == "" or int(current) > int(accumulator)
                     ):
                         accumulator = current
-                    if current == "":
-                        print("debug")
                 # Build the new number by appending the current digit
                 dp[i][j] = accumulator + line[i]
             # Check if we have a new max
