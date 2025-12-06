@@ -60,8 +60,9 @@ def part2():
             else:
                 # Accumulate multi-character numbers across columns
                 for j in range(widths[i]):
-                    if line[offset + j] != " ":
-                        nums[i][j] += line[offset + j]
+                    column_i_jth_char = line[offset+j]
+                    if column_i_jth_char != " ":
+                        nums[i][j] += column_i_jth_char
     
     return result
 
