@@ -38,7 +38,7 @@ def part2():
     lines = data.splitlines()
     last_line = lines[-1]
     
-    # Find column positions where operators/numbers appear
+    # Find column positions where operators appear
     offsets = [i for i, c in enumerate(last_line) if c != " "]
     
     # Calculate width of each column
