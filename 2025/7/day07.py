@@ -8,7 +8,7 @@ from pathlib import Path
 year = 2025
 day = 7
 lines = Path(f"{year}/{day}/day{day:02d}.txt").read_text().splitlines()
-# lines = Path(f"{year}/{day}/day{day:02d}_sample.txt").read_text().splitlines()
+lines = Path(f"{year}/{day}/day{day:02d}_sample.txt").read_text().splitlines()
 
 # Shape of data
 rows = len(lines)
@@ -26,19 +26,16 @@ data_dict = defaultdict(
 ## Part 1
 # @timeit
 def part1():
-    start_col = None
-    for col in range(cols):
-        if data_dict[0][col] == 'S':
-            start_col = col
+    start_col = next(col for col in range(cols) if data_dict[0][col] == 'S')
     
     beam_cols = {start_col}
-    count = 0
+    splits = 0
     
     for row in range(rows):
         new_beam_cols = set()
         for beam_col in beam_cols:
             if data_dict[row][beam_col] == "^":
-                count += 1
+                splits += 1
                 if data_dict[row+1][beam_col - 1] != "!":
                     new_beam_cols.add(beam_col - 1)
                 if data_dict[row+1][beam_col + 1] != "!":
@@ -48,7 +45,7 @@ def part1():
         
         beam_cols = new_beam_cols
     
-    return count
+    return splits
 
 
 
@@ -58,7 +55,30 @@ print(part1())
 ## Part 2
 # @timeit
 def part2():
-    pass
+    start_col = next(col for col in range(cols) if data_dict[0][col] == 'S')
+    
+    # Each beam is now (column, path_tuple)
+    beams = {(start_col, ())}
 
+    for row in range(rows):
+        beams2 = set()
+        for beam_col, path in beams:
+            new_path = path + (beam_col,)
+            
+            if data_dict[row][beam_col] == '^':
+                beams2.add((beam_col + 1, new_path))
+                beams2.add((beam_col - 1, new_path))
+            else:
+                beams2.add((beam_col, new_path))
+        
+        beams = beams2
+    
+    # Collect all final timelines
+    all_timelines = set()
+    for beam_col, path in beams:
+        final_path = path + (beam_col,)
+        all_timelines.add(final_path)
+    
+    return len(all_timelines)
 
-part2()
+print(part2())
