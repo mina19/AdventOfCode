@@ -36,10 +36,8 @@ def part1():
         for beam_col in beam_cols:
             if data_dict[row][beam_col] == "^":
                 splits += 1
-                if data_dict[row + 1][beam_col - 1] != "!":
-                    new_beam_cols.add(beam_col - 1)
-                if data_dict[row + 1][beam_col + 1] != "!":
-                    new_beam_cols.add(beam_col + 1)
+                new_beam_cols.add(beam_col - 1)
+                new_beam_cols.add(beam_col + 1)
             else:
                 new_beam_cols.add(beam_col)
 
