@@ -2,9 +2,9 @@
 from collections import defaultdict
 from pathlib import Path
 
-# from get_data import save_data, timeit
+from get_data import save_data, timeit
 
-# save_data(year := 2025, day := 7)
+save_data(year := 2025, day := 7)
 year = 2025
 day = 7
 lines = Path(f"{year}/{day}/day{day:02d}.txt").read_text().splitlines()
@@ -24,7 +24,7 @@ data_dict = defaultdict(
 
 
 ## Part 1
-# @timeit
+@timeit
 def part1():
     start_col = next(col for col in range(cols) if data_dict[0][col] == "S")
 
@@ -50,7 +50,7 @@ print(part1())
 
 
 ## Part 2
-# @timeit
+@timeit
 def part2_does_not_scale():
     start_col = next(col for col in range(cols) if data_dict[0][col] == "S")
 
@@ -79,6 +79,7 @@ def part2_does_not_scale():
     return len(all_timelines)
 
 
+@timeit
 def part2_count():
     start_col = next(col for col in range(cols) if data_dict[0][col] == "S")
 

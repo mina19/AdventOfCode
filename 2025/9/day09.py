@@ -14,8 +14,6 @@ coords = [tuple(map(int, line.split(","))) for line in data.splitlines()]
 ## Part 1
 @timeit
 def part1():
-    coords = [tuple(map(int, line.split(","))) for line in data.splitlines()]
-
     all_edges = [
         (
             idx1,
@@ -28,7 +26,7 @@ def part1():
     ]
 
     all_edges.sort(key=lambda x: x[2], reverse=True)
-    coord_idx1, coord_idx2, area = all_edges[0]
+    _, _, area = all_edges[0]
 
     return area
 
