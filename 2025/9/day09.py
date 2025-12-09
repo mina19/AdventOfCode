@@ -64,17 +64,40 @@ def point_in_polygon(x, y):
     return inside
 
 
+# @lru_cache
+# def all_rectangle_points_inside(x1, y1, x2, y2):
+#     """
+#     Returns True if all integer points in the rectangle (inclusive) are inside the polygon.
+#     """
+#     xmin, xmax = min(x1, x2), max(x1, x2)
+#     ymin, ymax = min(y1, y2), max(y1, y2)
+#     for x in range(xmin, xmax + 1):
+#         for y in range(ymin, ymax + 1):
+#             if not point_in_polygon(x, y):
+#                 return False
+#     return True
 @lru_cache
 def all_rectangle_points_inside(x1, y1, x2, y2):
     """
-    Returns True if all integer points in the rectangle (inclusive) are inside the polygon.
+    Returns True if all integer points on the rectangle perimeter (inclusive) are inside the polygon.
     """
     xmin, xmax = min(x1, x2), max(x1, x2)
     ymin, ymax = min(y1, y2), max(y1, y2)
+
+    # Check top and bottom edges
     for x in range(xmin, xmax + 1):
-        for y in range(ymin, ymax + 1):
-            if not point_in_polygon(x, y):
-                return False
+        if not point_in_polygon(x, ymin):
+            return False
+        if not point_in_polygon(x, ymax):
+            return False
+
+    # Check left and right edges (excluding corners already checked)
+    for y in range(ymin + 1, ymax):
+        if not point_in_polygon(xmin, y):
+            return False
+        if not point_in_polygon(xmax, y):
+            return False
+
     return True
 
 
