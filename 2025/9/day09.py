@@ -105,7 +105,7 @@ def all_rectangle_points_inside(x1, y1, x2, y2):
 
 # @timeit
 def part2_did_not_scale():
-    all_edges = [
+    candidates = [
         (
             idx1,
             idx2,
@@ -116,22 +116,21 @@ def part2_did_not_scale():
         for idx2, coord_idx2 in enumerate(coords[idx1 + 1 :], start=idx1 + 1)
     ]
 
-    all_edges.sort(key=lambda x: x[2], reverse=True)
+    candidates.sort(key=lambda x: x[2], reverse=True)
 
     best_area = 0
     best_corners = None
 
-    for coord_idx1, coord_idx2, edge_area in all_edges:
+    for coord_idx1, coord_idx2, area in candidates:
         p1 = coords[coord_idx1]
         p2 = coords[coord_idx2]
 
         # Skip if area is smaller than current best
-        if edge_area <= best_area:
-            break  # Can break since list is sorted
+        if area <= best_area:
+            break
 
-        # Check if all points in rectangle are inside polygon
         if all_rectangle_points_inside(p1[0], p1[1], p2[0], p2[1]):
-            best_area = edge_area
+            best_area = area
             best_corners = (p1, p2)
 
     return best_corners, best_area
