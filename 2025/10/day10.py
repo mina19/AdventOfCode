@@ -100,31 +100,32 @@ def part2():
 
     #     return best_solution, min_presses
 
-    # def solve_buttons(button_schematic, diagram):
-    #     n_buttons = button_schematic.shape[0]
-
-    #     # Minimize total button presses
-    #     c = np.ones(n_buttons)
-    #     A_eq = button_schematic.T
-    #     b_eq = diagram
-    #     bounds = [(0, np.inf)] * n_buttons
-
-    #     # Solve as a continuous problem first
-    #     res = linprog(c, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method="simplex")
-
-    #     if res.success and np.allclose(A_eq @ (res.x), b_eq):
-    #         return res.x, np.sum(res.x)
-
-    #     return None, 0
-
-    def solve_buttons(button_schematic, diagram, max_press=1000):
+    # DOES NOT SOLVE ALL OF THEM
+    def solve_buttons_linprog(button_schematic, diagram):
         n_buttons = button_schematic.shape[0]
 
         # Minimize total button presses
         c = np.ones(n_buttons)
         A_eq = button_schematic.T
         b_eq = diagram
-        bounds = Bounds(0, max_press)
+        bounds = [(0, np.inf)] * n_buttons
+
+        # Solve as a continuous problem first
+        res = linprog(c, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method="simplex")
+
+        if res.success and np.allclose(A_eq @ (res.x), b_eq):
+            return res.x, np.sum(res.x)
+
+        return None, 0
+
+    def solve_buttons(button_schematic, diagram):
+        n_buttons = button_schematic.shape[0]
+
+        # Minimize total button presses
+        c = np.ones(n_buttons)
+        A_eq = button_schematic.T
+        b_eq = diagram
+        bounds = Bounds(0, np.inf)
         integrality = np.full(n_buttons, 1)
         constraint = LinearConstraint(A_eq, b_eq, b_eq)
 
