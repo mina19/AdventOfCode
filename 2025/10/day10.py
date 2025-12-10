@@ -112,11 +112,8 @@ def part2():
     #     # Solve as a continuous problem first
     #     res = linprog(c, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method="simplex")
 
-    #     if res.success:
-    #         # Round to nearest integer and check if it matches
-    #         x_sol = np.round(res.x).astype(int)
-    #         if np.array_equal(A_eq @ x_sol, b_eq):
-    #             return x_sol, np.sum(x_sol)
+    #     if res.success and np.allclose(A_eq @ (res.x), b_eq):
+    #         return res.x, np.sum(res.x)
 
     #     return None, 0
 
@@ -139,17 +136,14 @@ def part2():
             options={"disp": False},
         )
 
-        if res.success:
-            x_sol = np.round(res.x).astype(int)
-            if np.array_equal(A_eq @ x_sol, b_eq):
-                return x_sol, np.sum(x_sol)
+        if res.success and np.allclose(A_eq @ (res.x), b_eq):
+            return res.x, np.sum(res.x)
 
         return None, 0
 
     result = 0
     for joltage, button_schematic in zip(joltages, button_schematics):
         res, num_presses = solve_buttons(np.array(button_schematic), joltage)
-        print(num_presses)
         result += num_presses
 
     return result
