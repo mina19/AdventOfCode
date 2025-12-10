@@ -103,14 +103,10 @@ def part2():
     # def solve_buttons(button_schematic, diagram):
     #     n_buttons = button_schematic.shape[0]
 
+    #     # Minimize total button presses
     #     c = np.ones(n_buttons)
-
-    #     # Constraints: button_schematic.T @ x == diagram
     #     A_eq = button_schematic.T
     #     b_eq = diagram
-
-    #     # Bounds: x >= 0, integer
-    #     max_press = sum(diagram) * 1000
     #     bounds = [(0, np.inf)] * n_buttons
 
     #     # Solve as a continuous problem first
