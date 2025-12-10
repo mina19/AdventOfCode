@@ -65,19 +65,6 @@ def point_in_polygon(x, y):
 
     return inside
 
-
-# @lru_cache
-# def all_rectangle_points_inside(x1, y1, x2, y2):
-#     """
-#     Returns True if all integer points in the rectangle (inclusive) are inside the polygon.
-#     """
-#     xmin, xmax = min(x1, x2), max(x1, x2)
-#     ymin, ymax = min(y1, y2), max(y1, y2)
-#     for x in range(xmin, xmax + 1):
-#         for y in range(ymin, ymax + 1):
-#             if not point_in_polygon(x, y):
-#                 return False
-#     return True
 @lru_cache
 def all_rectangle_points_inside(x1, y1, x2, y2):
     """
@@ -133,9 +120,12 @@ def part2_did_not_scale():
             best_area = area
             best_corners = (p1, p2)
 
-    return best_corners, best_area
+            return best_corners, best_area
+    
+    return None, 0
 
 
+### New method
 def check_rectangle_in_rectilinear_polygon(x1, y1, x2, y2):
     xmin, xmax = min(x1, x2), max(x1, x2)
     ymin, ymax = min(y1, y2), max(y1, y2)
@@ -152,7 +142,7 @@ def check_rectangle_in_rectilinear_polygon(x1, y1, x2, y2):
     test_xs = sorted(test_xs)
     test_ys = sorted(test_ys)
     
-    # Check all corners first (fast rejection)
+    # Check all corners first
     if not all(point_in_polygon(x, y) for x, y in 
                [(xmin, ymin), (xmin, ymax), (xmax, ymin), (xmax, ymax)]):
         return False
