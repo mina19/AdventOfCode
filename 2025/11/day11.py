@@ -59,7 +59,7 @@ def part2_did_not_scale(start_device, required_devices):
     return len(paths)
 
 
-def part2_memoized(start_device, end_device):
+def part2_memoized(start_device):
     start_device = next(device for device in devices if device == start_device)
 
     memo = {}
@@ -71,7 +71,7 @@ def part2_memoized(start_device, end_device):
             return memo[(current_device, visited_tuple)]
 
         # Base case: reached the end
-        if current_device == end_device:
+        if current_device == "out":
             return 1
 
         # Explore all future devices
@@ -92,7 +92,7 @@ def part2_memoized(start_device, end_device):
             return memo[current_device]
 
         # Base case
-        if current_device == end_device:
+        if current_device == "out":
             return 1
 
         # Sum paths through all neighbors
@@ -110,7 +110,7 @@ def part2_memoized(start_device, end_device):
             return memo[(current_device, required_remaining)]
 
         # Base case
-        if current_device == end_device:
+        if current_device == "out":
             return 1 if len(required_remaining) == 0 else 0
 
         # Update required devices if we just visited one
@@ -132,4 +132,4 @@ def part2_memoized(start_device, end_device):
     return count_paths_through_required(start_device, frozenset(["fft", "dac"]))
 
 
-print(part2_memoized("svr", "out"))
+print(part2_memoized("svr"))
