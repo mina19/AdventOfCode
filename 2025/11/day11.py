@@ -1,5 +1,4 @@
 ## Pull Data
-from functools import lru_cache
 from pathlib import Path
 
 from get_data import save_data, timeit
@@ -57,31 +56,80 @@ def part2_did_not_scale(start_device, required_devices):
                     new_paths.append(path + [future_device])
         paths = new_paths
 
-    valid_paths = [
-        path for path in all_paths if all(device in path for device in required_devices)
-    ]
-
-    return len(valid_paths)
+    return len(paths)
 
 
-def solve(start_device, required_devices):
-    required_devices = tuple(required_devices)
+def part2_memoized(start_device, end_device):
+    start_device = next(device for device in devices if device == start_device)
 
-    @lru_cache(maxsize=None)
-    def dfs(current, visited):
-        visited_set = set(visited)
-        if current == "out":
-            if all(device in visited_set for device in required_devices):
-                return 1
-            return 0
-        count = 0
-        for next_device in data_dict[current]:
-            if next_device not in visited_set:
-                count += dfs(next_device, tuple(list(visited_set) + [next_device]))
-        return count
+    memo = {}
 
-    return dfs(start_device, (start_device,))
+    # Slow. Do not do.
+    def count_paths(current_device, visited_tuple):
+        # Count distinct paths from this device to "out"
+        if (current_device, visited_tuple) in memo:
+            return memo[(current_device, visited_tuple)]
+
+        # Base case: reached the end
+        if current_device == end_device:
+            return 1
+
+        # Explore all future devices
+        total_paths = 0
+        for future_device in data_dict[current_device]:
+            if future_device not in visited_tuple:
+                # Add current device to visited set
+                new_visited = visited_tuple + (future_device,)
+                total_paths += count_paths(future_device, new_visited)
+
+        memo[(current_device, visited_tuple)] = total_paths
+        return total_paths
+
+    # Fast. But does not handle required devices.
+    def count_paths_dag(current_device):
+        # Only works if there are no cycles in the graph
+        if current_device in memo:
+            return memo[current_device]
+
+        # Base case
+        if current_device == end_device:
+            return 1
+
+        # Sum paths through all neighbors
+        total_paths = sum(
+            count_paths_dag(next_device) for next_device in data_dict[current_device]
+        )
+
+        memo[current_device] = total_paths
+        return total_paths
+
+    def count_paths_through_required(
+        current_device: str, required_remaining: frozenset
+    ):
+        if (current_device, required_remaining) in memo:
+            return memo[(current_device, required_remaining)]
+
+        # Base case
+        if current_device == end_device:
+            return 1 if len(required_remaining) == 0 else 0
+
+        # Update required devices if we just visited one
+        new_required = (
+            required_remaining - {current_device}
+            if current_device in required_remaining
+            else required_remaining
+        )
+
+        # Sum paths through all neighbors
+        total_paths = sum(
+            count_paths_through_required(next_device, new_required)
+            for next_device in data_dict[current_device]
+        )
+
+        memo[(current_device, new_required)] = total_paths
+        return total_paths
+
+    return count_paths_through_required(start_device, frozenset(["fft", "dac"]))
 
 
-print(solve("dac", "fft"))
-print(solve("fft", "dac"))
+print(part2_memoized("svr", "out"))
