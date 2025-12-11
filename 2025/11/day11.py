@@ -1,4 +1,5 @@
 ## Pull Data
+from functools import lru_cache
 from pathlib import Path
 
 from get_data import save_data, timeit
@@ -39,7 +40,7 @@ def part1():
 
 ## Part 2
 @timeit
-def mini_solver(start_device, required_device):
+def part2_did_not_scale(start_device, required_devices):
     start_device = next(device for device in devices if device == start_device)
     paths = [[start_device]]
     all_paths = []
@@ -56,10 +57,31 @@ def mini_solver(start_device, required_device):
                     new_paths.append(path + [future_device])
         paths = new_paths
 
-    valid_paths = [path for path in all_paths if required_device in path]
+    valid_paths = [
+        path for path in all_paths if all(device in path for device in required_devices)
+    ]
 
     return len(valid_paths)
 
 
-print(mini_solver("dac", "fft"))
-print(mini_solver("fft", "dac"))
+def solve(start_device, required_devices):
+    required_devices = tuple(required_devices)
+
+    @lru_cache(maxsize=None)
+    def dfs(current, visited):
+        visited_set = set(visited)
+        if current == "out":
+            if all(device in visited_set for device in required_devices):
+                return 1
+            return 0
+        count = 0
+        for next_device in data_dict[current]:
+            if next_device not in visited_set:
+                count += dfs(next_device, tuple(list(visited_set) + [next_device]))
+        return count
+
+    return dfs(start_device, (start_device,))
+
+
+print(solve("dac", "fft"))
+print(solve("fft", "dac"))
