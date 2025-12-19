@@ -182,7 +182,37 @@ def part1_does_not_scale():
     
     return feasible_count
 
-print(part1_does_not_scale())
+
+
+
+def part1_imgoingtobemadifthisworks():
+    # Check the obvious
+    # Calculate areas for each present
+    present_areas = np.array([
+        np.sum(present_shapes[i]) if i in present_shapes else 0
+        for i in range(len(present_shapes))
+    ])
+    
+    feasible_count = 0
+    for i, req in enumerate(requirements):
+        width, height = req['grid_size']
+        grid_area = width * height
+        
+        # Calculate total area needed for this requirement
+        present_counts_array = np.array([
+            req['present_counts'][j] 
+            for j in range(len(present_shapes))
+        ])
+        
+        total_present_area = np.sum(present_areas * present_counts_array)
+        
+        if grid_area >= total_present_area:
+            feasible_count += 1
+    
+    return feasible_count
+
+# This is not a general solution.....
+print(part1_imgoingtobemadifthisworks())
 
 
 ## Part 2
